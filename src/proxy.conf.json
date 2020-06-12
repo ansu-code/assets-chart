@@ -1,6 +1,6 @@
 {
-  "/api/*": {
-    "target": "https://app.ipredict.io/",
+  "/ipredictapi/*": {
+    "target": "https://app.ipredict.io",
     "secure": false,
     "logLevel": "debug",
     "changeOrigin": true
