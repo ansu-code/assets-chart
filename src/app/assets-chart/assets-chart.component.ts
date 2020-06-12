@@ -12,20 +12,23 @@ import { ApiService } from '../../services/api.service';
 export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
   isChecked: boolean = false;
   private chart: am4charts.XYChart;
+  private accessToken: any;
 
   constructor(private zone: NgZone, private http: HttpClient, private api: ApiService) { }
 
   public async ngOnInit() {
 
-    const result = await this.api.post('ipredictapi/oidc/login',
+    const response = await this.api.post('ipredictapi/oidc/login',
       {
           "partyId":"TEPSOL",
           "username":"tepsoladmin1",
           "passwd":"activate"
         });
 
-    console.log('result', result);
+    this.accessToken = response.result.access_token;
 
+    // @ts-ignore
+    // @ts-ignore
     const result1 = await this.api.post('SolarSightWS/generic/pg/selectFrom',
       {
         "keySpace": "iot",
@@ -42,7 +45,7 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
         ],
         "orderBy": "meas_date",
         "orderType": "ASC"
-      });
+      }, this.accessToken);
 
     console.log('result1', result1);
 

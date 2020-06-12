@@ -16,7 +16,7 @@ export class ApiService {
   constructor(private http: HttpClient) {
   }
 
-  async _fetchRaw(method, url, data, maxTime, type?): Promise<any> {
+  async _fetchRaw(method, url, data, accessToken, maxTime, type?): Promise<any> {
 
     // handle undefined data
     if (!_.isObject(data)) {
@@ -51,6 +51,10 @@ export class ApiService {
         });
       }
 
+      if (accessToken) {
+        headers = headers.set('Authorization', 'Bearer ' + accessToken);
+      }
+
       let httpRequest = new HttpRequest(_.toUpper(apiVerb), apiUrl, data, {
         headers: headers,
         params: params,
@@ -72,11 +76,11 @@ export class ApiService {
 
   }
 
-  async _fetch(method, url, data, maxTime, type?) {
+  async _fetch(method, url, data, accessToken, maxTime, type?) {
 
     try {
 
-      const result = await this._fetchRaw(method, url, data, maxTime, type);
+      const result = await this._fetchRaw(method, url, data, accessToken, maxTime, type);
 
       return result;
 
@@ -85,11 +89,11 @@ export class ApiService {
     }
   }
 
-  public async post (url, data?, type?, maxTime = this.DEFAULT_MAX_HTTP_TIME): Promise<any> {
+  public async post (url, data?, accessToken?, type?, maxTime = this.DEFAULT_MAX_HTTP_TIME): Promise<any> {
     if (type === 'document') {
       maxTime = this.DOCUMENT_MAX_HTTP_TIME;
     }
-    return this._fetch('post', url, data, maxTime, type);
+    return this._fetch('post', url, data, accessToken, maxTime, type);
   }
 
 }
