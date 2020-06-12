@@ -1,6 +1,8 @@
 import { Component, OnInit, AfterViewInit, NgZone, OnDestroy } from '@angular/core';
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
+import { HttpClient } from '@angular/common/http';
+import { ApiService } from '../../services/api.service';
 
 @Component({
   selector: 'app-assetschart',
@@ -11,10 +13,18 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
   isChecked: boolean = false;
   private chart: am4charts.XYChart;
 
-  constructor(private zone: NgZone) { }
+  constructor(private zone: NgZone, private http: HttpClient, private api: ApiService) { }
 
-  ngOnInit() {
+  public async ngOnInit() {
 
+    const result = await this.api.post('ipredictapi/oidc/login',
+      {
+          "partyId":"TEPSOL",
+          "username":"tepsoladmin1",
+          "passwd":"activate"
+        });
+
+    console.log('result', result);
   }
 
   ngAfterViewInit() {
@@ -222,6 +232,8 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
       this.chart = chart;
 //    });
   }
+
+
 
   ngOnDestroy() {
     this.zone.runOutsideAngular(() => {

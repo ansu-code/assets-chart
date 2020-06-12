@@ -5,6 +5,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AssetschartComponent } from './assets-chart/assets-chart.component';
 import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
+import { ApiService } from '../services/api.service';
 
 @NgModule({
   declarations: [
@@ -14,9 +16,12 @@ import { FormsModule } from '@angular/forms';
   imports: [
     FormsModule,
     BrowserModule,
-    AppRoutingModule
+    HttpClientModule,
+    AppRoutingModule,
   ],
-  providers: [],
+  providers: [
+    ApiService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
