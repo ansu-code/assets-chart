@@ -31,15 +31,15 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
       const result = get(this.response, 'result', []);
 
       each(result, function (chartResult) {
-          const data1 = JSON.parse(chartResult);
-          data.push({ date: data1.meas_time, value: data1.meas_num_v, unit: 'kwh'});
+          const getData = JSON.parse(chartResult);
+          data.push({ date: getData.meas_time, value: getData.meas_num_v, unit: 'kwh'});
       });
 
     //  this.zone.runOutsideAngular(() => {
       let chart = am4core.create("chartdiv", am4charts.XYChart);
       chart.paddingRight = 40;
 
-      /*var value = 50;
+     /* var value = 50;
       var value2 = 50;
       for (let i = -365; i < 0; i++) {
         for (let j = 0; j < 24; j++) {
@@ -56,10 +56,12 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
             if (value2 < 0) {
               value2 = Math.round(Math.random() * 10);
             }
-            data.push({ date: date, value: data2.meas_num_v, unit: 'kwh', value2: value2, unit2: 'mwh' });
+            data.push({ date: date, value: value, unit: 'kwh', value2: value2, unit2: 'mwh' });
           }
         }
       }*/
+
+      console.log('data', data);
 
       chart.data = data;
 
