@@ -26,12 +26,13 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
 
       await this.getData();
 
-      var data = [];
+      let data = [];
 
       const result = get(this.response, 'result', []);
 
       each(result, function (chartResult) {
-          console.log('chartResult', chartResult);
+          const data1 = JSON.parse(chartResult);
+          data.push({ date: data1.meas_time, value: data1.meas_num_v, unit: 'kwh'});
       });
 
     //  this.zone.runOutsideAngular(() => {
