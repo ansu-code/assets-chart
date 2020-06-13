@@ -3,6 +3,7 @@ import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../../services/api.service';
+import { get, each } from 'lodash';
 
 @Component({
   selector: 'app-assetschart',
@@ -13,51 +14,31 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
   isChecked: boolean = false;
   private chart: am4charts.XYChart;
   private accessToken: any;
+  private response: any;
 
   constructor(private zone: NgZone, private http: HttpClient, private api: ApiService) { }
 
-  public async ngOnInit() {
-
-    const response = await this.api.post('ipredictapi/oidc/login',
-      {
-          "partyId":"TEPSOL",
-          "username":"tepsoladmin1",
-          "passwd":"activate"
-        });
-
-    this.accessToken = response.result.access_token;
-
-    // @ts-ignore
-    // @ts-ignore
-    const result1 = await this.api.post('SolarSightWS/generic/pg/selectFrom',
-      {
-        "keySpace": "iot",
-        "tableName": "asset_meas_by_min_hist",
-        "allCols": true,
-        "cols": ["site_ref_key", "asset_ref_key", "meas_name", "meas_date"],
-        "andConditions": [
-          {"col": "party_id", "operator": "=", "value": "TEPSOL"},
-          {"col": "site_ref_key", "operator": "IN", "values": ["TEPSOL_SITE_001"]},
-          {"col": "asset_ref_key", "operator": "IN", "values": ["TEPSOL_SITE_001_110101"]},
-          {"col": "meas_name", "operator": "IN", "values": ["COUNT_KWH_HR"]},
-          {"col": "meas_date", "operator": ">=", "value": "2020-06-01"},
-          {"col": "meas_date", "operator": "<=", "value": "2020-06-07"}
-        ],
-        "orderBy": "meas_date",
-        "orderType": "ASC"
-      }, this.accessToken);
-
-    console.log('result1', result1);
+  public ngOnInit() {
 
   }
 
-  ngAfterViewInit() {
-  //  this.zone.runOutsideAngular(() => {
+  public async ngAfterViewInit() {
+
+      await this.getData();
+
+      var data = [];
+
+      const result = get(this.response, 'result', []);
+
+      each(result, function (chartResult) {
+          console.log('chartResult', chartResult);
+      });
+
+    //  this.zone.runOutsideAngular(() => {
       let chart = am4core.create("chartdiv", am4charts.XYChart);
       chart.paddingRight = 40;
 
-      var data = [];
-      var value = 50;
+      /*var value = 50;
       var value2 = 50;
       for (let i = -365; i < 0; i++) {
         for (let j = 0; j < 24; j++) {
@@ -74,10 +55,10 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
             if (value2 < 0) {
               value2 = Math.round(Math.random() * 10);
             }
-            data.push({ date: date, value: value, unit: 'kwh', value2: value2, unit2: 'mwh' });
+            data.push({ date: date, value: data2.meas_num_v, unit: 'kwh', value2: value2, unit2: 'mwh' });
           }
         }
-      }
+      }*/
 
       chart.data = data;
 
@@ -257,7 +238,35 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
 //    });
   }
 
+  public async getData() {
+    const response = await this.api.post('ipredictapi/oidc/login',
+      {
+        "partyId":"TEPSOL",
+        "username":"tepsoladmin1",
+        "passwd":"activate"
+      });
 
+    this.accessToken = response.result.access_token;
+
+    this.response = await this.api.post('SolarSightWS/generic/pg/selectFrom',
+      {
+        "keySpace": "iot",
+        "tableName": "asset_meas_by_min_hist",
+        "allCols": true,
+        "cols": ["site_ref_key", "asset_ref_key", "meas_name", "meas_date"],
+        "andConditions": [
+          {"col": "party_id", "operator": "=", "value": "TEPSOL"},
+          {"col": "site_ref_key", "operator": "IN", "values": ["TEPSOL_SITE_001"]},
+          {"col": "asset_ref_key", "operator": "IN", "values": ["TEPSOL_SITE_001_110101"]},
+          {"col": "meas_name", "operator": "IN", "values": ["COUNT_KWH_HR"]},
+          {"col": "meas_date", "operator": ">=", "value": "2020-06-01"},
+          {"col": "meas_date", "operator": "<=", "value": "2020-06-07"}
+        ],
+        "orderBy": "meas_date",
+        "orderType": "ASC"
+      }, this.accessToken);
+
+  }
 
   ngOnDestroy() {
     this.zone.runOutsideAngular(() => {
