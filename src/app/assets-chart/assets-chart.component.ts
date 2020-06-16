@@ -3,7 +3,7 @@ import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../../services/api.service';
-import { get, each } from 'lodash';
+import { get, each, map } from 'lodash';
 
 @Component({
   selector: 'app-assetschart',
@@ -15,6 +15,8 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
   private chart: am4charts.XYChart;
   private accessToken: any;
   private response: any;
+  private getName: any;
+  private groupData: any;
 
   constructor(private zone: NgZone, private http: HttpClient, private api: ApiService) { }
 
@@ -24,6 +26,7 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public async ngAfterViewInit() {
 
+
       await this.getData();
 
       let data = [];
@@ -31,15 +34,35 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
       const result = get(this.response, 'result', []);
 
       each(result, function (chartResult) {
-          const getData = JSON.parse(chartResult);
-          data.push({ date: getData.meas_time, value: getData.meas_num_v, unit: 'kwh'});
+        const getData = JSON.parse(chartResult);
+        data.push({ date: getData.meas_time, value: getData.meas_num_v, unit: 'kwh', name: getData.asset_name});
       });
+
+
+    this.groupData = _(data)
+      .groupBy('name')
+      .map(function(group, name) {
+        return {
+          name: name,
+          data: map(group, 'date')
+        };
+      })
+      .value();
+
+    console.log('groupData', this.groupData);
+
+    /*
+        console.log('meas_name', data[0].name);
+
+        this.getName = data[0].name;
+
+          console.log('getName', this.getName);*/
 
     //  this.zone.runOutsideAngular(() => {
       let chart = am4core.create("chartdiv", am4charts.XYChart);
       chart.paddingRight = 40;
 
-     /* var value = 50;
+      /*var value = 50;
       var value2 = 50;
       for (let i = -365; i < 0; i++) {
         for (let j = 0; j < 24; j++) {
@@ -61,7 +84,7 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }*/
 
-      console.log('data', data);
+      //console.log('data', data);
 
       chart.data = data;
 
@@ -263,7 +286,7 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
           {"col": "asset_ref_key", "operator": "IN", "values": ["TEPSOL_SITE_001_110101"]},
           {"col": "meas_name", "operator": "IN", "values": ["COUNT_KWH_HR"]},
           {"col": "meas_date", "operator": ">=", "value": "2020-06-01"},
-          {"col": "meas_date", "operator": "<=", "value": "2020-06-07"}
+          {"col": "meas_date", "operator": "<=", "value": "2020-06-01"}
         ],
         "orderBy": "meas_date",
         "orderType": "ASC"
