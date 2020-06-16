@@ -40,8 +40,8 @@
   </div>
   </div>
 
-<div class="checkbox">
-  <label><input type="checkbox" placeholder="INVERTOR" (click)="getData()"> INVERTOR</label>
+<div class="checkbox" *ngFor="let result of groupData">
+  <label><input type="checkbox" placeholder="INVERTOR" (click)="getData()"> {{result.name}}</label>
 </div>
 
 <div id="chartdiv">  

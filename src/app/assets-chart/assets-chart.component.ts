@@ -38,6 +38,33 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
         data.push({ date: getData.meas_time, value: getData.meas_num_v, unit: 'kwh', name: getData.asset_name});
       });
 
+    console.log('data', data);
+
+    data = [{
+        date: "2019-08-05T10:00:01+00:00",
+        name: "INVERTER1",
+        unit: "kwh",
+        value: 3.26
+      },
+      {
+        date: "2019-08-05T10:00:01+00:00",
+        name: "INVERTER2",
+        unit: "kwh",
+        value: 3.26
+      },
+      {
+        date: "2019-08-05T10:00:01+00:00",
+        name: "INVERTER1",
+        unit: "kwh",
+        value: 3.26
+      },
+      {
+        date: "2019-08-05T10:00:01+00:00",
+        name: "INVERTER2",
+        unit: "kwh",
+        value: 3.26
+      }];
+
     this.groupData = _(data)
       .groupBy('name')
       .map(function(group, name) {
@@ -96,6 +123,8 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
       dateAxis.renderer.labels.template.fill = am4core.color("#e59165");
       dateAxis.groupData = true;
       dateAxis.groupCount = 13;
+
+      console.log('dateAxis', dateAxis);
 
       var dateAxis2 = chart.xAxes.push(new am4charts.DateAxis());
       dateAxis2.renderer.grid.template.location = 0;
