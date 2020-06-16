@@ -38,13 +38,16 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
         data.push({ date: getData.meas_time, value: getData.meas_num_v, unit: 'kwh', name: getData.asset_name});
       });
 
-
     this.groupData = _(data)
       .groupBy('name')
       .map(function(group, name) {
         return {
           name: name,
-          data: map(group, 'date')
+          data: [{
+           date: map(group, 'date'),
+           value: map(group, 'value'),
+           unit: map(group, 'unit')
+          }]
         };
       })
       .value();
