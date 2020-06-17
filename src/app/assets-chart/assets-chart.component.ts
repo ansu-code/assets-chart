@@ -24,39 +24,19 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public getAllData() {
-    /*this.chartData = [
-      {
-        name: 'INVERTER1',
-      },
-      {
-        name: 'INVERTER2',
-      }
-    ];*/
 
-    /*this.chartData = [
+    this.chartData = [
       {
         name: 'INVERTER1',
         data: [
-          {date: '2019-02-05T10:00:01+00:00', value: 3.26},
+          {date: '2019-02-05T10:00:01+00:00', value: 3.26, unit: 'kwh'},
         {date: '2019-08-07T10:00:01+00:00', value: 17.26, unit: 'kwh'},
         {date: '2020-05-07T10:00:01+00:00', value: 37.26, unit: 'kwh'},
         {date: '2020-10-07T10:00:01+00:00', value: 97.26, unit: 'kwh'}
         ]
-      }];*/
+      }];
 
-    this.data = [
-      {date: '2019-02-05T10:00:01+00:00', value: 3.26},
-      {date: '2019-08-07T10:00:01+00:00', value: 17.26, unit: 'kwh'},
-      {date: '2020-05-07T10:00:01+00:00', value: 37.26, unit: 'kwh'},
-      {date: '2020-10-07T10:00:01+00:00', value: 97.26, unit: 'kwh'}
-    ];
   }
-
- /* var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
-  // dateAxis.renderer.grid.template.location = 0;
-  // dateAxis.renderer.labels.template.fill = am4core.color("#e59165");
-  // dateAxis.groupData = true;
-  // dateAxis.groupCount = 13;*/
 
   public getDateAxis(chart) {
     let dateAxis = chart.xAxes.push(new am4charts.DateAxis());
@@ -214,7 +194,7 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
 
     let chart = am4core.create("chartdiv", am4charts.XYChart);
     chart.paddingRight = 40;
-    chart.data = this.data;
+    chart.data = this.chartData[0].data;
 
     await this.getDateAxis(chart);
     await this.getValueAxis(chart);
@@ -225,8 +205,7 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log(this.chartData);
 
 
-    let chartnewData = this.data;
-    let chartAxisData = this.chartData;
+    let chartnewData = this.chartData[0].data;
 
     chart.exporting.menu = new am4core.ExportMenu();
     var self = this;
@@ -251,7 +230,6 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
         chartnewData.forEach((element) => {
           element.dateAxis.groupCount = 6 * 24 * 7;
         });
-        console.log('chartAxisData', chartAxisData);
         chart.data = newData;
       }
       else if (selectedItem === "hour") {
