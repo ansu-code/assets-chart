@@ -33,15 +33,21 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     ];*/
 
-    this.data = [
-      { date: '2019-08-05T10:00:01+00:00', value: 3.26, unit: 'kwh', value1: 1.26, unit1: 'kwh', value2: 7.26, unit2: 'kwh', value3: 8.26, unit3: 'kwh' },
-      { date: '2020-08-07T10:00:01+00:00', value: 7.26, unit: 'kwh', value1: 8.26, unit1: 'kwh', value2: 7.26, unit2: 'kwh', value3: 8.26, unit3: 'kwh' }
-      ];
-
+    this.data = [{ date: '2019-02-05T10:00:01+00:00', value: 3.26},
+      { date: '2019-08-07T10:00:01+00:00', value: 17.26, unit: 'kwh'},
+      { date: '2020-05-07T10:00:01+00:00', value: 37.26, unit: 'kwh'},
+      { date: '2020-10-07T10:00:01+00:00', value: 97.26, unit: 'kwh'},
+    ];
 
   }
 
-  public getDataAxis(chart) {
+ /* var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
+  // dateAxis.renderer.grid.template.location = 0;
+  // dateAxis.renderer.labels.template.fill = am4core.color("#e59165");
+  // dateAxis.groupData = true;
+  // dateAxis.groupCount = 13;*/
+
+  public getDateAxis(chart) {
     let dateAxis = chart.xAxes.push(new am4charts.DateAxis());
     dateAxis.renderer.grid.template.location = 0;
     dateAxis.renderer.labels.template.fill = am4core.color("#e59165");
@@ -50,6 +56,9 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
 
     chart.data.forEach((element) => {
       element.dateAxis = dateAxis;
+      console.log('element', element);
+      console.log('dateAxis', dateAxis);
+
     });
   }
 
@@ -101,7 +110,6 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
     chart.data.forEach((element) => {
       element.valueAxis.renderer.grid.template.strokeOpacity = 0.07;
       element.dateAxis.renderer.grid.template.strokeOpacity = 0.07;
-      element.dateAxis.renderer.labels.template.disabled = true;
     });
   }
 
@@ -200,7 +208,7 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
     chart.paddingRight = 40;
     chart.data = this.data;
 
-    await this.getDataAxis(chart);
+    await this.getDateAxis(chart);
     await this.getValueAxis(chart);
     await this.setSeries(chart);
     await this.chartAxis(chart);
