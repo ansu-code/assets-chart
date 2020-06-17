@@ -33,12 +33,23 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     ];*/
 
-    this.data = [{ date: '2019-02-05T10:00:01+00:00', value: 3.26},
-      { date: '2019-08-07T10:00:01+00:00', value: 17.26, unit: 'kwh'},
-      { date: '2020-05-07T10:00:01+00:00', value: 37.26, unit: 'kwh'},
-      { date: '2020-10-07T10:00:01+00:00', value: 97.26, unit: 'kwh'},
-    ];
+    /*this.chartData = [
+      {
+        name: 'INVERTER1',
+        data: [
+          {date: '2019-02-05T10:00:01+00:00', value: 3.26},
+        {date: '2019-08-07T10:00:01+00:00', value: 17.26, unit: 'kwh'},
+        {date: '2020-05-07T10:00:01+00:00', value: 37.26, unit: 'kwh'},
+        {date: '2020-10-07T10:00:01+00:00', value: 97.26, unit: 'kwh'}
+        ]
+      }];*/
 
+    this.data = [
+      {date: '2019-02-05T10:00:01+00:00', value: 3.26},
+      {date: '2019-08-07T10:00:01+00:00', value: 17.26, unit: 'kwh'},
+      {date: '2020-05-07T10:00:01+00:00', value: 37.26, unit: 'kwh'},
+      {date: '2020-10-07T10:00:01+00:00', value: 97.26, unit: 'kwh'}
+    ];
   }
 
  /* var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
@@ -56,9 +67,6 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
 
     chart.data.forEach((element) => {
       element.dateAxis = dateAxis;
-      console.log('element', element);
-      console.log('dateAxis', dateAxis);
-
     });
   }
 
@@ -225,7 +233,7 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
     document.getElementById("chkStack").addEventListener("change", function () {
       if (self.isChecked) {
         chart.leftAxesContainer.layout = "vertical";
-        chartAxisData.forEach((element) => {
+        chartnewData.forEach((element) => {
           element.valueAxis.marginBottom = 20;
         });
       }
@@ -240,16 +248,17 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
         var last = new Date(lastValue).setDate(new Date(lastValue).getDate() - 7);
         var newData = chartnewData.filter(x => new Date(x.date).getTime() >= last && x.date.getTime() <= lastValue);
         lastValue = last;
-        chartAxisData.forEach((element) => {
+        chartnewData.forEach((element) => {
           element.dateAxis.groupCount = 6 * 24 * 7;
         });
+        console.log('chartAxisData', chartAxisData);
         chart.data = newData;
       }
       else if (selectedItem === "hour") {
         var last = new Date(lastValue).setDate(new Date(lastValue).getDate() - 30);
         var newData = chartnewData.filter(x => new Date(x.date).getTime() >= last && x.date.getTime() <= lastValue);
         lastValue = last;
-        chartAxisData.forEach((element) => {
+        chartnewData.forEach((element) => {
           element.dateAxis.groupCount = 24 * 31;
         });
         chart.data = newData;
@@ -258,7 +267,7 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
         var last = new Date(lastValue).setDate(new Date(lastValue).getDate() - 30);
         var newData = chartnewData.filter(x => x.date >= last && new Date(x.date).getTime() <= lastValue);
         lastValue = last;
-        chartAxisData.forEach((element) => {
+        chartnewData.forEach((element) => {
           element.dateAxis.groupCount = 30 * 2;
         });
         chart.data = newData;
@@ -269,7 +278,7 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
         var last = new Date(lastValue).setDate(new Date(lastValue).getDate() + 7);
         var newData = chartnewData.filter(x => x.date.getTime() >= last && new Date(x.date).getTime() <= new Date(last).setDate(new Date(last).getDate() + 7));
         lastValue = last;
-        chartAxisData.forEach((element) => {
+        chartnewData.forEach((element) => {
           element.dateAxis.groupCount = 6 * 24 * 7;
         });
         chart.data = newData;
@@ -278,7 +287,7 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
         var last = new Date(lastValue).setDate(new Date(lastValue).getDate() + 30);
         var newData = chartnewData.filter(x => x.date.getTime() >= last && new Date(x.date).getTime() <= new Date(last).setDate(new Date(last).getDate() + 7));
         lastValue = last;
-        chartAxisData.forEach((element) => {
+        chartnewData.forEach((element) => {
           element.dateAxis.groupCount = 24 * 31;
         });
         chart.data = newData;
@@ -287,7 +296,7 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
         var last = new Date(lastValue).setDate(new Date(lastValue).getDate() + 30);
         var newData = chartnewData.filter(x => x.date >= last && new Date(x.date).getTime() <= new Date(last).setDate(new Date(last).getDate() + 30));
         lastValue = last;
-        chartAxisData.forEach((element) => {
+        chartnewData.forEach((element) => {
           element.dateAxis.groupCount = 30 * 2;
         });
         chart.data = newData;
@@ -298,7 +307,7 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
       var last = new Date().setDate(new Date().getDate() - 8);
       lastValue = last;
       var newData = chartnewData.filter(x => new Date(x.date).getTime() >= last);
-      chartAxisData.forEach((element) => {
+      chartnewData.forEach((element) => {
         element.dateAxis.groupCount = 6 * 24 * 8;
       });
       chart.data = newData;
@@ -308,7 +317,7 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
       var last = new Date().setDate(new Date().getDate() - 31);
       lastValue = last;
       var newData = chartnewData.filter(x => new Date(x.date).getTime() >= last);
-      chartAxisData.forEach((element) => {
+      chartnewData.forEach((element) => {
         element.dateAxis.groupCount = 24 * 31;
       });
       chart.data = newData;
@@ -318,7 +327,7 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
       var last = new Date().setDate(new Date().getDate() - 31);
       lastValue = last;
       var newData = chartnewData.filter(x => new Date(x.date).getTime() >= last);
-      chartAxisData.forEach((element) => {
+      chartnewData.forEach((element) => {
         element.dateAxis.groupCount = 24 * 31;
       });
 
@@ -329,13 +338,13 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
       var last = new Date().setDate(new Date().getDate() - 365);
       lastValue = last;
       var newData = chartnewData.filter(x => new Date(x.date).getTime() >= last);
-      chartAxisData.forEach((element) => {
+      chartnewData.forEach((element) => {
         element.dateAxis.groupCount = 31;
       });
       chart.data = newData;
     });
     var inputFieldFormat = "yyyy-MM-dd";
-    chartAxisData.forEach((element) => {
+    chartnewData.forEach((element) => {
       element.dateAxis.events.on("selectionextremeschanged", function () {
         updateFieldsZoom();
       });
