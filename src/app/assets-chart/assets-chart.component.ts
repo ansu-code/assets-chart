@@ -34,6 +34,15 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
         {date: '2020-05-07T10:00:01+00:00', value: 37.26, unit: 'kwh'},
         {date: '2020-10-07T10:00:01+00:00', value: 97.26, unit: 'kwh'}
         ]
+      },
+      {
+        name: 'INVERTER2',
+        data: [
+          {date: '2018-02-05T10:00:01+00:00', value: 5.26, unit: 'kwh'},
+          {date: '2018-08-07T10:00:01+00:00', value: 22.26, unit: 'kwh'},
+          {date: '2019-05-07T10:00:01+00:00', value: 46.26, unit: 'kwh'},
+          {date: '2019-10-07T10:00:01+00:00', value: 67.26, unit: 'kwh'}
+        ]
       }];
 
   }
@@ -61,12 +70,15 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  public setSeries(chart) {
+  public setSeries(chart, name) {
+
+    let series = chart.series.push(new am4charts.LineSeries());
+
+    series.name = name;
 
     let i = 1;
     chart.data.forEach((element) => {
-      let series = chart.series.push(new am4charts.LineSeries());
-      series.name = "Measure"+i;
+
       series.dataFields.dateX = "date";
       series.dataFields.valueY = "value";
       series.yAxis = element.valueAxis;
@@ -194,15 +206,17 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
 
     let chart = am4core.create("chartdiv", am4charts.XYChart);
     chart.paddingRight = 40;
-    chart.data = this.chartData[0].data;
 
-    await this.getDateAxis(chart);
-    await this.getValueAxis(chart);
-    await this.setSeries(chart);
-    await this.chartAxis(chart);
-    await this.renderChart(chart);
+    this.chartData.forEach((element) => {
+      chart.data = element.data;
+       this.getDateAxis(chart);
+       this.getValueAxis(chart);
+       this.setSeries(chart, element.name);
+       this.chartAxis(chart);
+       this.renderChart(chart);
+    });
 
-    console.log(this.chartData);
+   // console.log(this.chartData);
 
 
     let chartnewData = this.chartData[0].data;
