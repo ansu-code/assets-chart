@@ -32,5 +32,15 @@
   </div>
 </nav>
 
-<app-assetschart></app-assetschart>
+<div>
+  <label>
+    <input type="checkbox" ngModel (ngModelChange)="getData($event , 'COUNT_KWH_HR')"> COUNT_KWH_HR
+  </label>
+</div>
+
+<app-assetschart
+  [response]="response"
+  [measName]="measName"
+></app-assetschart>
+
 <router-outlet></router-outlet>

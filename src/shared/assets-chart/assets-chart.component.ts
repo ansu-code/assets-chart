@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, NgZone, OnDestroy } from '@angular/core';
+import {Component, OnInit, AfterViewInit, NgZone, OnDestroy, Input} from '@angular/core';
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import { HttpClient } from '@angular/common/http';
@@ -17,32 +17,22 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
   private chartData: any;
   private data: any;
 
+  @Input() response: any;
+  @Input() measName: any;
+
   constructor(private zone: NgZone) { }
   public ngOnInit() {
+    console.log('response', this.response);
   }
 
   public async getAllData() {
 
-    this.chartData = [
-      {
-        name: 'INVERTER1',
-        data: [
-          {date: '2019-02-05T10:00:01+00:00', value: 3.26, unit: 'kwh'},
-        {date: '2019-08-07T10:00:01+00:00', value: 17.26, unit: 'kwh'},
-        {date: '2020-05-07T10:00:01+00:00', value: 37.26, unit: 'kwh'},
-        {date: '2020-10-07T10:00:01+00:00', value: 97.26, unit: 'kwh'}
-        ]
-      },
-      {
-        name: 'INVERTER2',
-        data: [
-          {date: '2018-02-05T10:00:01+00:00', value: 5.26, unit: 'kwh'},
-          {date: '2018-08-07T10:00:01+00:00', value: 22.26, unit: 'kwh'},
-          {date: '2019-05-07T10:00:01+00:00', value: 46.26, unit: 'kwh'},
-          {date: '2019-10-07T10:00:01+00:00', value: 67.26, unit: 'kwh'}
-        ]
-      }];
-
+    this.response = [
+      {date: '2019-02-05T10:00:01+00:00', value: 3.26, unit: 'kwh'},
+      {date: '2019-08-07T10:00:01+00:00', value: 17.26, unit: 'kwh'},
+      {date: '2020-05-07T10:00:01+00:00', value: 37.26, unit: 'kwh'},
+      {date: '2020-10-07T10:00:01+00:00', value: 97.26, unit: 'kwh'}
+    ];
   }
 
   public getDateAxis(chart) {
@@ -112,112 +102,23 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public async ngAfterViewInit() {
-    // await this.getData();
-    //  let data = [];
-    //  const result = get(this.response, 'result', []);
-    //  console.log('result', result);
-    // each(result, function (chartResult) {
-    //     getData = JSON.parse(chartResult);
-    //     // data.push({ date: getData.meas_time, value: getData.meas_num_v, unit: 'kwh'});
-    // });
 
-    // console.log('getData', getData);
-
-    //  this.zone.runOutsideAngular(() => {
-    // let chart = am4core.create("chartdiv", am4charts.XYChart);
-    // chart.paddingRight = 40;
-    /*  var value = 50;
-      var value2 = 50;
-      for (let i = -365; i < 0; i++) {
-        for (let j = 0; j < 24; j++) {
-          for (let k = 0; k < 60; k += 10) {
-            let date = new Date();
-            date.setDate(i);
-            date.setHours(j, k, 0, 0);
-            value -= Math.round((Math.random() < 0.5 ? 1 : -1) * Math.random() * 10);
-            if (value < 0) {
-              value = Math.round(Math.random() * 10);
-            }
-            value2 -= Math.round((Math.random() < 0.5 ? 1 : -1) * Math.random() * 10);
-            if (value2 < 0) {
-              value2 = Math.round(Math.random() * 10);
-            }
-            data.push({ date: date, value: value, unit: 'kwh', value2: value2, unit2: 'mwh' });
-          }
-        }
-      }*/
-
-    // console.log('data', this.chartData);
-    // // chart.data = data;
-    // var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
-    // dateAxis.renderer.grid.template.location = 0;
-    // dateAxis.renderer.labels.template.fill = am4core.color("#e59165");
-    // dateAxis.groupData = true;
-    // dateAxis.groupCount = 13;
-    // var dateAxis2 = chart.xAxes.push(new am4charts.DateAxis());
-    // dateAxis2.renderer.grid.template.location = 0;
-    // dateAxis2.renderer.labels.template.fill = am4core.color("#dfcc64");
-    // dateAxis2.groupData = true;
-    // dateAxis2.groupCount = 13;
-    // var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-    // valueAxis.tooltip.disabled = true;
-    // valueAxis.renderer.labels.template.fill = am4core.color("#e59165");
-    // valueAxis.renderer.minWidth = 60;
-    // var valueAxis2 = chart.yAxes.push(new am4charts.ValueAxis());
-    // valueAxis2.tooltip.disabled = true;
-    // valueAxis2.renderer.labels.template.fill = am4core.color("#dfcc64");
-    // valueAxis2.renderer.minWidth = 60;
-    // valueAxis2.syncWithAxis = valueAxis;
-    // var series = chart.series.push(new am4charts.LineSeries());
-    // series.name = "Measure1";
-    // series.dataFields.dateX = "date";
-    // series.dataFields.valueY = "value";
-    // series.tooltipText = "{valueY.value} {unit}";
-    // series.fill = am4core.color("#e59165");
-    // series.stroke = am4core.color("#e59165");
-    // series.tensionX = 0.8;
-    // var series2 = chart.series.push(new am4charts.LineSeries());
-    // series2.name = "Measure2";
-    // series2.dataFields.dateX = "date";
-    // series2.dataFields.valueY = "value2";
-    // series2.yAxis = valueAxis2;
-    // series2.xAxis = dateAxis2;
-    // series2.tooltipText = "{valueY.value} {unit2}";
-    // series2.fill = am4core.color("#dfcc64");
-    // series2.stroke = am4core.color("#dfcc64");
-    // series2.tensionX = 0.8;
-    // chart.cursor = new am4charts.XYCursor();
-    // chart.cursor.xAxis = dateAxis2;
-    // var scrollbarX = new am4charts.XYChartScrollbar();
-    // chart.scrollbarX = scrollbarX;
-    // chart.legend = new am4charts.Legend();
-    // chart.legend.parent = chart.plotContainer;
-    // chart.legend.zIndex = 100;
-    // valueAxis2.renderer.grid.template.strokeOpacity = 0.07;
-    // dateAxis2.renderer.grid.template.strokeOpacity = 0.07;
-    // dateAxis.renderer.grid.template.strokeOpacity = 0.07;
-    // valueAxis.renderer.grid.template.strokeOpacity = 0.07;
-    // dateAxis2.renderer.labels.template.disabled = true;
     await this.getAllData();
-
-    console.log(this.data);
 
     let chart = am4core.create("chartdiv", am4charts.XYChart);
     chart.paddingRight = 40;
 
-    this.chartData.forEach((element) => {
-      chart.data = element.data;
+      chart.data = this.response;
        this.getDateAxis(chart);
        this.getValueAxis(chart);
-       this.setSeries(chart, element.name);
+       this.setSeries(chart, this.measName);
        this.chartAxis(chart);
        this.renderChart(chart);
-    });
 
    // console.log(this.chartData);
 
 
-    let chartnewData = this.chartData[0].data;
+    let chartnewData = this.response;
 
     chart.exporting.menu = new am4core.ExportMenu();
     var self = this;
