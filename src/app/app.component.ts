@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../services/api.service';
 
@@ -7,7 +7,7 @@ import { ApiService } from '../services/api.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements AfterViewInit, OnDestroy{
+export class AppComponent {
   title = 'assets-ui';
   private accessToken: any;
   public response: any;
@@ -15,9 +15,6 @@ export class AppComponent implements AfterViewInit, OnDestroy{
 
   constructor(private http: HttpClient, private api: ApiService) {
 
-  }
-
-  public async ngAfterViewInit() {
   }
 
   public async getData(event, label) {
@@ -47,7 +44,7 @@ export class AppComponent implements AfterViewInit, OnDestroy{
             {"col": "party_id", "operator": "=", "value": "TEPSOL"},
             {"col": "site_ref_key", "operator": "IN", "values": ["TEPSOL_SITE_001"]},
             {"col": "asset_ref_key", "operator": "IN", "values": ["TEPSOL_SITE_001_110101"]},
-            {"col": "meas_name", "operator": "IN", "values": label},
+            {"col": "meas_name", "operator": "IN", "values": 'COUNT_KWH_HR'},
             {"col": "meas_date", "operator": ">=", "value": "2019-06-01"},
             {"col": "meas_date", "operator": "<=", "value": "2020-06-07"}
           ],
@@ -57,6 +54,4 @@ export class AppComponent implements AfterViewInit, OnDestroy{
     }
   }
 
-  public ngOnDestroy() {
-  }
 }
