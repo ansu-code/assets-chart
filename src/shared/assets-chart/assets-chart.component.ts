@@ -1,9 +1,8 @@
 import {Component, OnInit, AfterViewInit, NgZone, OnDestroy, Input} from '@angular/core';
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
-import { HttpClient } from '@angular/common/http';
-import { ApiService } from '../../services/api.service';
 import { get, each, map, filter } from 'lodash';
+import {ChartService} from "../../services/chart.service";
 
 @Component({
   selector: 'app-assetschart',
@@ -14,18 +13,18 @@ import { get, each, map, filter } from 'lodash';
 export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
   isChecked: boolean = false;
   private chart: am4charts.XYChart;
-  private chartData: any;
-  private data: any;
 
   @Input() response: any;
   @Input() measName: any;
 
-  constructor(private zone: NgZone) { }
+  constructor(private zone: NgZone, private chartService: ChartService) { }
   public ngOnInit() {
     console.log('response', this.response);
   }
 
   public async getAllData() {
+
+    // get the selected response
 
     this.response = [
       {date: '2019-02-05T10:00:01+00:00', value: 3.26, unit: 'kwh'},
@@ -35,85 +34,23 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
     ];
   }
 
-  public getDateAxis(chart) {
-    let dateAxis = chart.xAxes.push(new am4charts.DateAxis());
-    dateAxis.renderer.grid.template.location = 0;
-    dateAxis.renderer.labels.template.fill = am4core.color("#e59165");
-    dateAxis.groupData = true;
-    dateAxis.groupCount = 13;
-
-    chart.data.forEach((element) => {
-      element.dateAxis = dateAxis;
-    });
-  }
-
-  public getValueAxis(chart) {
-    let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-    valueAxis.tooltip.disabled = true;
-    valueAxis.renderer.labels.template.fill = am4core.color("#e59165");
-    valueAxis.renderer.minWidth = 60;
-
-    chart.data.forEach((element) => {
-      element.valueAxis = valueAxis;
-    });
-  }
-
-  public setSeries(chart, name) {
-
-    let series = chart.series.push(new am4charts.LineSeries());
-
-    series.name = name;
-
-    let i = 1;
-    chart.data.forEach((element) => {
-
-      series.dataFields.dateX = "date";
-      series.dataFields.valueY = "value";
-      series.yAxis = element.valueAxis;
-      series.xAxis = element.dateAxis;
-      series.tooltipText = "{valueY.value} {unit}";
-      series.fill = am4core.color("#e59165");
-      series.stroke = am4core.color("#e59165");
-      element.series = series;
-      i++;
-    });
-  }
-
-  public chartAxis(chart) {
-    chart.data.forEach((element) => {
-      chart.cursor = new am4charts.XYCursor();
-      chart.cursor.xAxis = element.dateAxis;
-
-      let scrollbarX = new am4charts.XYChartScrollbar();
-      chart.scrollbarX = scrollbarX;
-      chart.legend = new am4charts.Legend();
-      chart.legend.parent = chart.plotContainer;
-      chart.legend.zIndex = 100;
-
-      element.scrollbarX = scrollbarX;
-    });
-  }
-
-  public renderChart(chart) {
-    chart.data.forEach((element) => {
-      element.valueAxis.renderer.grid.template.strokeOpacity = 0.07;
-      element.dateAxis.renderer.grid.template.strokeOpacity = 0.07;
-    });
-  }
-
   public async ngAfterViewInit() {
 
     await this.getAllData();
 
+    // Create Chart
+
     let chart = am4core.create("chartdiv", am4charts.XYChart);
     chart.paddingRight = 40;
+    chart.data = this.response;
 
-      chart.data = this.response;
-       this.getDateAxis(chart);
-       this.getValueAxis(chart);
-       this.setSeries(chart, this.measName);
-       this.chartAxis(chart);
-       this.renderChart(chart);
+    // Set the xAxes and yAxes
+
+    await this.chartService.getDateAxis(chart);
+    await this.chartService.getValueAxis(chart);
+    await this.chartService.setSeries(chart, this.measName);
+    await this.chartService.chartAxis(chart);
+    await this.chartService.renderChart(chart);
 
    // console.log(this.chartData);
 
@@ -133,8 +70,10 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
         chart.leftAxesContainer.layout = "horizontal";
       }
     });
+
     var lastValue = 0;
     var selectedItem = "month";
+
     document.getElementById("previous").addEventListener("click", function () {
       if (selectedItem === "minute") {
         var last = new Date(lastValue).setDate(new Date(lastValue).getDate() - 7);
@@ -247,7 +186,6 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
     this.chart = chart;
-//    });
   }
 
   ngOnDestroy() {
