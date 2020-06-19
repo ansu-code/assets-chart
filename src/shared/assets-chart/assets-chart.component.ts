@@ -10,6 +10,7 @@ import { get, each, map, filter } from 'lodash';
   templateUrl: './assets-chart.component.html',
   styleUrls: ['./assets-chart.component.scss']
 })
+
 export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
   isChecked: boolean = false;
   private chart: am4charts.XYChart;
@@ -23,7 +24,7 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
   public ngOnInit() {
   }
 
-  public getAllData() {
+  public async getAllData() {
 
     this.chartData = [
       {
@@ -357,7 +358,12 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
         "username":"tepsoladmin1",
         "passwd":"activate"
       });
+
+    console.log('response', response);
+
     this.accessToken = response.result.access_token;
+    console.log('this.accessToken', this.accessToken);
+
     this.response = await this.api.post('SolarSightWS/generic/pg/selectFrom',
       {
         "keySpace": "iot",
