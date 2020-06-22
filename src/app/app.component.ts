@@ -48,7 +48,7 @@ export class AppComponent implements AfterViewInit {
               {"col": "party_id", "operator": "=", "value": "TEPSOL"},
               {"col": "site_ref_key", "operator": "IN", "values": ["TEPSOL_SITE_001"]},
               {"col": "asset_ref_key", "operator": "IN", "values": ["TEPSOL_SITE_001_110101"]},
-              {"col": "meas_name", "operator": "IN", "values": this.measName},
+              {"col": "meas_name", "operator": "IN", "values": [this.measName]},
               {"col": "meas_date", "operator": ">=", "value": "2019-06-01"},
               {"col": "meas_date", "operator": "<=", "value": "2020-06-07"}
             ],
