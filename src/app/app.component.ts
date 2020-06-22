@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {AfterViewInit, Component} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../services/api.service';
 
@@ -7,7 +7,7 @@ import { ApiService } from '../services/api.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements AfterViewInit {
   title = 'assets-ui';
   private accessToken: any;
   public response: any;
@@ -17,21 +17,23 @@ export class AppComponent {
 
   }
 
+  public async ngAfterViewInit() {
+    const response = await this.api.post('ipredictapi/oidc/login',
+      {
+        "partyId":"TEPSOL",
+        "username":"tepsoladmin1",
+        "passwd":"activate"
+      });
+
+    this.accessToken = response.result.access_token;
+  }
+
   public async getData(event, label) {
 
     this.measName = label;
 
     if (event) {
-      const response = await this.api.post('ipredictapi/oidc/login',
-        {
-          "partyId":"TEPSOL",
-          "username":"tepsoladmin1",
-          "passwd":"activate"
-        });
 
-      console.log('response', response);
-
-      this.accessToken = response.result.access_token;
       console.log('this.accessToken', this.accessToken);
 
       this.response = await this.api.post('SolarSightWS/generic/pg/selectFrom',
