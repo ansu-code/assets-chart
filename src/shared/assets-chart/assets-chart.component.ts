@@ -2,7 +2,8 @@ import {Component, OnInit, AfterViewInit, NgZone, OnDestroy, Input} from '@angul
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import { get, each, map, filter } from 'lodash';
-import {ChartService} from "../../services/chart.service";
+import { ChartService } from '../../services/chart.service';
+import { EventsService } from '../../services/events.service';
 
 @Component({
   selector: 'app-assetschart',
@@ -14,29 +15,30 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
   isChecked: boolean = false;
   private chart: am4charts.XYChart;
 
-  @Input() response: any;
+  @Input() response: any[];
   @Input() measName: any;
 
-  constructor(private zone: NgZone, private chartService: ChartService) { }
-  public ngOnInit() {
-    console.log('response', this.response);
+  constructor(private zone: NgZone, private chartService: ChartService, public events: EventsService) {
+    events.listen('asset:Data', async (response) => {
+      console.log('response', response);
+      this.response = response;
+      await this.getData();
+    });
   }
 
-  public async getAllData() {
+  /*public async getAllData() {
 
     // get the selected response
 
-    this.response = [
+    /!*this.response = [
       {date: '2019-02-05T10:00:01+00:00', value: 3.26, unit: 'kwh'},
       {date: '2019-08-07T10:00:01+00:00', value: 17.26, unit: 'kwh'},
       {date: '2020-05-07T10:00:01+00:00', value: 37.26, unit: 'kwh'},
       {date: '2020-10-07T10:00:01+00:00', value: 97.26, unit: 'kwh'}
-    ];
-  }
+    ];*!/
+  }*/
 
-  public async ngAfterViewInit() {
-
-    await this.getAllData();
+  public async getData() {
 
     // Create Chart
 
@@ -194,5 +196,7 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
         this.chart.dispose();
       }
     });
+
+    events.dispose('asset:Data');
   }
 }

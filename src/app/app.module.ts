@@ -8,6 +8,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { ApiService } from '../services/api.service';
 import { SharedModule } from '../shared/shared.module';
 import { ChartService } from '../services/chart.service';
+import { EventsService } from '../services/events.service';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { ChartService } from '../services/chart.service';
   ],
   providers: [
     ApiService,
-    ChartService
+    ChartService,
+    EventsService
   ],
   bootstrap: [AppComponent]
 })
