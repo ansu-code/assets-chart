@@ -11,7 +11,7 @@ import { EventsService } from '../../services/events.service';
   styleUrls: ['./assets-chart.component.scss']
 })
 
-export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
+export class AssetschartComponent implements OnDestroy {
   isChecked: boolean = false;
   private chart: am4charts.XYChart;
 
@@ -197,6 +197,6 @@ export class AssetschartComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
 
-    events.dispose('asset:Data');
+    this.events.dispose('asset:Data');
   }
 }
