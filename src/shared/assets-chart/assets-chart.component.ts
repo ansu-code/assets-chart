@@ -20,9 +20,15 @@ export class AssetschartComponent implements OnDestroy {
 
   constructor(private zone: NgZone, private chartService: ChartService, public events: EventsService) {
     events.listen('asset:Data', async (response) => {
-      console.log('response', response);
-      this.response = response;
-      await this.getData();
+
+      let data = [];
+      const result = get(response, 'result', []);
+
+      each(result, function (chartResult) {
+        const data1 = JSON.parse(chartResult);
+        data.push({ date: data1.meas_time, value: data1.meas_num_v, unit: 'kwh'});
+      });
+      await this.getData(data);
     });
   }
 
@@ -38,13 +44,14 @@ export class AssetschartComponent implements OnDestroy {
     ];*!/
   }*/
 
-  public async getData() {
+  public async getData(data) {
 
+    console.log('data', data);
     // Create Chart
 
     let chart = am4core.create("chartdiv", am4charts.XYChart);
     chart.paddingRight = 40;
-    chart.data = this.response;
+    chart.data = data;
 
     // Set the xAxes and yAxes
 
@@ -57,7 +64,7 @@ export class AssetschartComponent implements OnDestroy {
    // console.log(this.chartData);
 
 
-    let chartnewData = this.response;
+    let chartnewData = data;
 
     chart.exporting.menu = new am4core.ExportMenu();
     var self = this;
