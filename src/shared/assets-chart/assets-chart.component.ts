@@ -1,34 +1,31 @@
-import {Component, OnInit, AfterViewInit, NgZone, OnDestroy, Input} from '@angular/core';
+import {Component, NgZone, OnDestroy, Input} from '@angular/core';
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import { get, each, map, filter } from 'lodash';
 import { ChartService } from '../../services/chart.service';
 import { EventsService } from '../../services/events.service';
+import * as moment from 'moment';
 
 @Component({
-  selector: 'app-assetschart',
+  selector: 'app-assets-chart',
   templateUrl: './assets-chart.component.html',
   styleUrls: ['./assets-chart.component.scss']
 })
 
 export class AssetschartComponent implements OnDestroy {
-  isChecked: boolean = false;
+
+  public isChecked = false;
   private chart: am4charts.XYChart;
+  public lastValue = 0;
+  public selectedItem = 'month';
+  public chartnewData: any;
 
   @Input() response: any[];
   @Input() measName: any;
 
   constructor(private zone: NgZone, private chartService: ChartService, public events: EventsService) {
     events.listen('asset:Data', async (response) => {
-
-      let data = [];
-      const result = get(response, 'result', []);
-
-      each(result, function (chartResult) {
-        const data1 = JSON.parse(chartResult);
-        data.push({ date: data1.meas_time, value: data1.meas_num_v, unit: 'kwh'});
-      });
-      await this.getData(data);
+      await this.getData(response);
     });
   }
 
@@ -44,160 +41,209 @@ export class AssetschartComponent implements OnDestroy {
     ];*!/
   }*/
 
-  public async getData(data) {
+  public async getData(response) {
 
-    console.log('data', data);
+    console.log('data', response);
     // Create Chart
 
-    let chart = am4core.create("chartdiv", am4charts.XYChart);
-    chart.paddingRight = 40;
-    chart.data = data;
+    this.chart = am4core.create("chartdiv", am4charts.XYChart);
+    this.chart.paddingRight = 40;
+    this.chart.data = response;
 
     // Set the xAxes and yAxes
 
-    await this.chartService.getDateAxis(chart);
-    await this.chartService.getValueAxis(chart);
-    await this.chartService.setSeries(chart, this.measName);
-    await this.chartService.chartAxis(chart);
-    await this.chartService.renderChart(chart);
+    await this.chartService.getDateAxis(this.chart);
+    await this.chartService.getValueAxis(this.chart);
+    await this.chartService.setSeries(this.chart, this.measName);
+    await this.chartService.chartAxis(this.chart);
+    await this.chartService.renderChart(this.chart);
 
    // console.log(this.chartData);
 
 
-    let chartnewData = data;
+    this.chartnewData = response;
 
-    chart.exporting.menu = new am4core.ExportMenu();
+    this.chart.exporting.menu = new am4core.ExportMenu();
     var self = this;
-    document.getElementById("chkStack").addEventListener("change", function () {
+   /* document.getElementById("chkStack").addEventListener("change", function () {
       if (self.isChecked) {
-        chart.leftAxesContainer.layout = "vertical";
-        chartnewData.forEach((element) => {
+        this.chart.leftAxesContainer.layout = "vertical";
+        this.chartnewData.forEach((element) => {
           element.valueAxis.marginBottom = 20;
         });
       }
       else {
-        chart.leftAxesContainer.layout = "horizontal";
+        this.chart.leftAxesContainer.layout = "horizontal";
       }
     });
 
-    var lastValue = 0;
-    var selectedItem = "month";
-
     document.getElementById("previous").addEventListener("click", function () {
-      if (selectedItem === "minute") {
-        var last = new Date(lastValue).setDate(new Date(lastValue).getDate() - 7);
-        var newData = chartnewData.filter(x => new Date(x.date).getTime() >= last && x.date.getTime() <= lastValue);
-        lastValue = last;
-        chartnewData.forEach((element) => {
+      if (this.selectedItem === "minute") {
+        var last = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 7);
+        var newData = this.chartnewData.filter(x => new Date(x.date).getTime() >= last && x.date.getTime() <= this.lastValue);
+        this.lastValue = last;
+        this.chartnewData.forEach((element) => {
           element.dateAxis.groupCount = 6 * 24 * 7;
         });
-        chart.data = newData;
+        this.chart.data = newData;
       }
-      else if (selectedItem === "hour") {
-        var last = new Date(lastValue).setDate(new Date(lastValue).getDate() - 30);
-        var newData = chartnewData.filter(x => new Date(x.date).getTime() >= last && x.date.getTime() <= lastValue);
-        lastValue = last;
-        chartnewData.forEach((element) => {
+      else if (this.selectedItem === "hour") {
+        var last = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 30);
+        var newData = this.chartnewData.filter(x => new Date(x.date).getTime() >= last && x.date.getTime() <= this.lastValue);
+        this.lastValue = last;
+        this.chartnewData.forEach((element) => {
           element.dateAxis.groupCount = 24 * 31;
         });
-        chart.data = newData;
+        this.chart.data = newData;
       }
-      else if (selectedItem === "day") {
-        var last = new Date(lastValue).setDate(new Date(lastValue).getDate() - 30);
-        var newData = chartnewData.filter(x => x.date >= last && new Date(x.date).getTime() <= lastValue);
-        lastValue = last;
-        chartnewData.forEach((element) => {
+      else if (this.selectedItem === "day") {
+        var last = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 30);
+        var newData = this.chartnewData.filter(x => x.date >= last && new Date(x.date).getTime() <= this.lastValue);
+        this.lastValue = last;
+        this.chartnewData.forEach((element) => {
           element.dateAxis.groupCount = 30 * 2;
         });
-        chart.data = newData;
+        this.chart.data = newData;
       }
     });
     document.getElementById("next").addEventListener("click", function () {
-      if (selectedItem === "minute") {
-        var last = new Date(lastValue).setDate(new Date(lastValue).getDate() + 7);
-        var newData = chartnewData.filter(x => x.date.getTime() >= last && new Date(x.date).getTime() <= new Date(last).setDate(new Date(last).getDate() + 7));
-        lastValue = last;
-        chartnewData.forEach((element) => {
+      if (this.selectedItem === "minute") {
+        var last = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() + 7);
+        var newData = this.chartnewData.filter(x => x.date.getTime() >= last && new Date(x.date).getTime() <= new Date(last).setDate(new Date(last).getDate() + 7));
+        this.lastValue = last;
+        this.chartnewData.forEach((element) => {
           element.dateAxis.groupCount = 6 * 24 * 7;
         });
-        chart.data = newData;
+        this.chart.data = newData;
       }
-      else if (selectedItem === "hour") {
-        var last = new Date(lastValue).setDate(new Date(lastValue).getDate() + 30);
-        var newData = chartnewData.filter(x => x.date.getTime() >= last && new Date(x.date).getTime() <= new Date(last).setDate(new Date(last).getDate() + 7));
-        lastValue = last;
-        chartnewData.forEach((element) => {
+      else if (this.selectedItem === "hour") {
+        var last = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() + 30);
+        var newData = this.chartnewData.filter(x => x.date.getTime() >= last && new Date(x.date).getTime() <= new Date(last).setDate(new Date(last).getDate() + 7));
+        this.lastValue = last;
+        this.chartnewData.forEach((element) => {
           element.dateAxis.groupCount = 24 * 31;
         });
-        chart.data = newData;
+        this.chart.data = newData;
       }
-      else if (selectedItem === "day") {
-        var last = new Date(lastValue).setDate(new Date(lastValue).getDate() + 30);
-        var newData = chartnewData.filter(x => x.date >= last && new Date(x.date).getTime() <= new Date(last).setDate(new Date(last).getDate() + 30));
-        lastValue = last;
-        chartnewData.forEach((element) => {
+      else if (this.selectedItem === "day") {
+        var last = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() + 30);
+        var newData = this.chartnewData.filter(x => x.date >= last && new Date(x.date).getTime() <= new Date(last).setDate(new Date(last).getDate() + 30));
+        this.lastValue = last;
+        this.chartnewData.forEach((element) => {
           element.dateAxis.groupCount = 30 * 2;
         });
-        chart.data = newData;
+        this.chart.data = newData;
       }
     });
+
     document.getElementById("minute").addEventListener("click", function () {
-      selectedItem = "minute";
+      this.selectedItem = "minute";
       var last = new Date().setDate(new Date().getDate() - 8);
-      lastValue = last;
-      var newData = chartnewData.filter(x => new Date(x.date).getTime() >= last);
-      chartnewData.forEach((element) => {
+      this.lastValue = last;
+      var newData = this.chartnewData.filter(x => new Date(x.date).getTime() >= last);
+      console.log('newData', newData);
+
+      this.chartnewData.forEach((element) => {
         element.dateAxis.groupCount = 6 * 24 * 8;
       });
-      chart.data = newData;
+
+      this.chart.data = newData;
     });
     document.getElementById("hour").addEventListener("click", function () {
-      selectedItem = "hour";
+      this.selectedItem = "hour";
       var last = new Date().setDate(new Date().getDate() - 31);
-      lastValue = last;
-      var newData = chartnewData.filter(x => new Date(x.date).getTime() >= last);
-      chartnewData.forEach((element) => {
-        element.dateAxis.groupCount = 24 * 31;
-      });
-      chart.data = newData;
-    });
-    document.getElementById("day").addEventListener("click", function () {
-      selectedItem = "day";
-      var last = new Date().setDate(new Date().getDate() - 31);
-      lastValue = last;
-      var newData = chartnewData.filter(x => new Date(x.date).getTime() >= last);
-      chartnewData.forEach((element) => {
-        element.dateAxis.groupCount = 24 * 31;
-      });
+      this.lastValue = last;
+      var newData = this.chartnewData.filter(x => new Date(x.date).getTime() >= last);
+      console.log('newData', newData);
 
-      chart.data = newData;
+      this.chartnewData.forEach((element) => {
+        element.dateAxis.groupCount = 24 * 31;
+      });
+      this.chart.data = newData;
     });
+
     document.getElementById("month").addEventListener("click", function () {
-      selectedItem = "month";
+      this.selectedItem = "month";
       var last = new Date().setDate(new Date().getDate() - 365);
-      lastValue = last;
-      var newData = chartnewData.filter(x => new Date(x.date).getTime() >= last);
-      chartnewData.forEach((element) => {
+      this.lastValue = last;
+      var newData = this.chartnewData.filter(x => new Date(x.date).getTime() >= last);
+      this.chartnewData.forEach((element) => {
         element.dateAxis.groupCount = 31;
       });
-      chart.data = newData;
+      this.chart.data = newData;
+
     });
     var inputFieldFormat = "yyyy-MM-dd";
-    chartnewData.forEach((element) => {
+    this.chartnewData.forEach((element) => {
       element.dateAxis.events.on("selectionextremeschanged", function () {
         updateFieldsZoom();
       });
       element.dateAxis.events.on("extremeschanged", updateFieldsZoom);
       function updateFieldsZoom() {
         var minZoomed = element.dateAxis.getTimeminZoomed + am4core.time.getDuration(element.dateAxis.mainBaseInterval.timeUnit, element.dateAxis.mainBaseInterval.count) * 0.5;
-        document.getElementById("fromfield").innerText = chart.dateFormatter.format(minZoomed, inputFieldFormat);
-        document.getElementById("tofield").innerText = chart.dateFormatter.format(new Date(element.dateAxis.maxZoomed), inputFieldFormat);
+        document.getElementById("fromfield").innerText = this.chart.dateFormatter.format(minZoomed, inputFieldFormat);
+        document.getElementById("tofield").innerText = this.chart.dateFormatter.format(new Date(element.dateAxis.maxZoomed), inputFieldFormat);
       }
     });
-    this.chart = chart;
+    console.log('this.this.chart', this.chart);*/
   }
 
-  ngOnDestroy() {
+  public getEvent(value) {
+    let days = 365;
+
+    switch (value) {
+      default:
+        days = 365;
+        this.setRange(value, days);
+        return 'month';
+      case 'month':
+        days = 365;
+        this.setRange(value, days);
+        return;
+      case 'day':
+        days = 31;
+        this.setRange(value, days);
+        return;
+      case 'hour':
+        days = 31;
+        this.setRange(value, days);
+        return;
+      case 'minute':
+        days = 8;
+        this.setRange(value, days);
+        return;
+      case 'previous':
+        console.log('previous', value);
+
+        return 'previous';
+      case 'next':
+        console.log('next', value);
+
+        return 'next';
+    }
+  }
+
+
+  public setRange(value, days) {
+      this.selectedItem = value;
+
+      const first = moment().subtract('days', days).format('YYYY-MM-DD');
+      const last = moment().format('YYYY-MM-DD');
+
+      const setDateRange = [];
+      setDateRange.push({first: first, last: last});
+
+      this.events.emit('onClick:Event', setDateRange);
+
+      /*this.chartnewData.forEach((element) => {
+       element.dateAxis.groupCount = 24 * 31;
+      });*/
+
+      //this.chart.data = newData;
+  }
+
+
+  public ngOnDestroy() {
     this.zone.runOutsideAngular(() => {
       if (this.chart) {
         this.chart.dispose();
