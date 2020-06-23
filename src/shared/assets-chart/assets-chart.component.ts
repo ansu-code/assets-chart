@@ -19,9 +19,9 @@ export class AssetschartComponent implements OnDestroy {
   public lastValue: any;
   public selectedItem = 'month';
   public chartnewData: any;
+  public measName: any;
 
-  @Input() response: any[];
-  @Input() measName: any;
+  @Input() data: any[];
   @Output() selectedValue: EventEmitter<any> = new EventEmitter();
 
   constructor(private zone: NgZone, private chartService: ChartService, public events: EventsService) {

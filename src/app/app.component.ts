@@ -12,7 +12,7 @@ import { get, each, map, filter } from 'lodash';
 export class AppComponent implements AfterViewInit, OnDestroy {
   title = 'assets-ui';
   private accessToken: any;
-  public response: any;
+  public data: any;
   public measName: any;
   public first = '2019-06-01';
   public last = '2019-08-07';
