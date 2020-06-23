@@ -16,7 +16,7 @@ export class AssetschartComponent implements OnDestroy {
 
   public isChecked = false;
   private chart: am4charts.XYChart;
-  public lastValue = 0;
+  public lastValue: any;
   public selectedItem = 'month';
   public chartnewData: any;
 
@@ -214,7 +214,7 @@ export class AssetschartComponent implements OnDestroy {
         this.setRange(value, days);
         return;
       case 'previous':
-        this.setPreviousRange(value);
+        this.setPreviousRange();
         return;
       case 'next':
         this.setNextRange(value);
@@ -230,8 +230,8 @@ export class AssetschartComponent implements OnDestroy {
       const last = moment().format('YYYY-MM-DD');
 
       const setDateRange = [];
-      this.lastValue = parseInt(last);
-      console.log('this',this.lastValue);
+      this.lastValue = first;
+
       setDateRange.push({first: first, last: last});
 
       this.events.emit('onClick:Event', setDateRange);
@@ -245,8 +245,7 @@ export class AssetschartComponent implements OnDestroy {
       //this.chart.data = newData;
   }
 
-  public setPreviousRange(value) {
-    this.selectedItem = value;
+  public setPreviousRange() {
 
     let first;
 
@@ -256,7 +255,12 @@ export class AssetschartComponent implements OnDestroy {
     if (this.selectedItem === 'hour' || this.selectedItem === 'day') {
       first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 30);
     }
+
+    first = moment(first).format('YYYY-MM-DD');
     const last = moment().format('YYYY-MM-DD');
+    this.lastValue = first;
+
+    console.log('first-chart', first);
 
     const setDateRange = [];
     setDateRange.push({first: first, last: last});
@@ -271,8 +275,7 @@ export class AssetschartComponent implements OnDestroy {
     //this.chart.data = newData;
   }
 
-  public setNextRange(value) {
-    this.selectedItem = value;
+  public setNextRange() {
 
     let first;
 
@@ -282,7 +285,12 @@ export class AssetschartComponent implements OnDestroy {
     if (this.selectedItem === 'hour' || this.selectedItem === 'day') {
       first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() + 30);
     }
+
+    first = moment(first).format('YYYY-MM-DD');
     const last = moment().format('YYYY-MM-DD');
+
+    console.log('next-chart', first);
+    this.lastValue = first;
 
     const setDateRange = [];
     setDateRange.push({first: first, last: last});

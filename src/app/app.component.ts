@@ -82,6 +82,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
 
   public getSelectedItem(selectedItem) {
     this.selectedItem = selectedItem;
+    console.log('this.selectedItem', this.selectedItem);
   }
 
   public ngOnDestroy() {
