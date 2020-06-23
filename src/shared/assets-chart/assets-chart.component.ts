@@ -217,7 +217,7 @@ export class AssetschartComponent implements OnDestroy {
         this.setPreviousRange();
         return;
       case 'next':
-        this.setNextRange(value);
+        this.setNextRange();
         return;
     }
   }
