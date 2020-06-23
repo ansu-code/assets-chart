@@ -1,4 +1,4 @@
-import {Component, NgZone, OnDestroy, Input} from '@angular/core';
+import {Component, NgZone, OnDestroy, Input, Output, EventEmitter} from '@angular/core';
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import { get, each, map, filter } from 'lodash';
@@ -22,6 +22,7 @@ export class AssetschartComponent implements OnDestroy {
 
   @Input() response: any[];
   @Input() measName: any;
+  @Output() selectedValue: EventEmitter<any> = new EventEmitter();
 
   constructor(private zone: NgZone, private chartService: ChartService, public events: EventsService) {
     events.listen('asset:Data', async (response) => {
@@ -234,10 +235,12 @@ export class AssetschartComponent implements OnDestroy {
       setDateRange.push({first: first, last: last});
 
       this.events.emit('onClick:Event', setDateRange);
+      this.selectedValue.emit(this.selectedItem);
 
-      /*this.chartnewData.forEach((element) => {
-       element.dateAxis.groupCount = 24 * 31;
-      });*/
+
+    /*this.chartnewData.forEach((element) => {
+     element.dateAxis.groupCount = 24 * 31;
+    });*/
 
       //this.chart.data = newData;
   }
@@ -259,6 +262,7 @@ export class AssetschartComponent implements OnDestroy {
     setDateRange.push({first: first, last: last});
 
     this.events.emit('onClick:Event', setDateRange);
+    this.selectedValue.emit(this.selectedItem);
 
     /*this.chartnewData.forEach((element) => {
      element.dateAxis.groupCount = 24 * 31;
@@ -282,6 +286,8 @@ export class AssetschartComponent implements OnDestroy {
 
     const setDateRange = [];
     setDateRange.push({first: first, last: last});
+
+    this.selectedValue.emit(this.selectedItem);
 
     this.events.emit('onClick:Event', setDateRange);
 

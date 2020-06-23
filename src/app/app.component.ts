@@ -16,6 +16,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   public measName: any;
   public first = '2019-06-01';
   public last = '2019-08-07';
+  public selectedItem = 'month';
 
   constructor(private http: HttpClient, private api: ApiService, public events: EventsService) {
     events.listen('onClick:Event', async (setDateRange) => {
@@ -77,6 +78,10 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     } catch (error) {
       console.log('Error getting response', error);
     }
+  }
+
+  public getSelectedItem(selectedItem) {
+    this.selectedItem = selectedItem;
   }
 
   public ngOnDestroy() {

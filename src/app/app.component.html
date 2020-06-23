@@ -41,6 +41,7 @@
 <app-assets-chart
   [response]="response"
   [measName]="measName"
+  (selectedValue) = "getSelectedItem($event)"
 ></app-assets-chart>
 
 <router-outlet></router-outlet>
