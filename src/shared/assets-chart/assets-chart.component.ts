@@ -257,11 +257,7 @@ export class AssetschartComponent implements OnDestroy {
       first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 365);
     }
 
-
     first = moment(first).format('YYYY-MM-DD');
-
-    console.log('first-chart.ts', first);
-    console.log('last-chart.ts', this.lastValue);
 
     const setDateRange = [];
     setDateRange.push({first: first, last: this.lastValue});
