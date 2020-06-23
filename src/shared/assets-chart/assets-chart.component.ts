@@ -45,6 +45,13 @@ export class AssetschartComponent implements OnDestroy {
   public async getData(response) {
 
     console.log('data', response);
+
+    /*const data = [];
+    each(response, function (chartResult) {
+      const data1 = JSON.parse(chartResult);
+      data.push({ date: data1.meas_time, value: data1.meas_num_v, unit: 'kwh'});
+    });
+*/
     // Create Chart
 
     this.chart = am4core.create("chartdiv", am4charts.XYChart);
@@ -237,12 +244,25 @@ export class AssetschartComponent implements OnDestroy {
       this.events.emit('onClick:Event', setDateRange);
       this.selectedValue.emit(this.selectedItem);
 
+      if (this.selectedItem === 'minute') {
+        this.chartnewData.forEach((element) => {
+          element.dateAxis.groupCount = 6 * 24 * 8;
+        });
+      } else if (this.selectedItem === 'hour') {
+        this.chartnewData.forEach((element) => {
+          element.dateAxis.groupCount = 24 * 31;
+        });
+      } else if (this.selectedItem === 'day') {
+        this.chartnewData.forEach((element) => {
+          element.dateAxis.groupCount = 31;
+        });
+      } else {
+        this.chartnewData.forEach((element) => {
+          element.dateAxis.groupCount = 365;
+        });
+      }
 
-    /*this.chartnewData.forEach((element) => {
-     element.dateAxis.groupCount = 24 * 31;
-    });*/
-
-      //this.chart.data = newData;
+      this.chart.data = this.chartnewData;
   }
 
   public setPreviousRange() {
@@ -267,11 +287,26 @@ export class AssetschartComponent implements OnDestroy {
     this.events.emit('onClick:Event', setDateRange);
     this.selectedValue.emit(this.selectedItem);
 
-    /*this.chartnewData.forEach((element) => {
-     element.dateAxis.groupCount = 24 * 31;
-    });*/
+    if (this.selectedItem === 'minute') {
+      this.chartnewData.forEach((element) => {
+        element.dateAxis.groupCount = 6 * 24 * 7;
+      });
+    } else if (this.selectedItem === 'hour') {
+      this.chartnewData.forEach((element) => {
+        element.dateAxis.groupCount = 24 * 31;
+      });
+    } else if (this.selectedItem === 'day') {
+      this.chartnewData.forEach((element) => {
+        element.dateAxis.groupCount = 30 * 2;
+      });
+    } else {
+      this.chartnewData.forEach((element) => {
+        element.dateAxis.groupCount = 365;
+      });
+    }
 
-    //this.chart.data = newData;
+    this.chart.data = this.chartnewData;
+
   }
 
   public setNextRange() {
@@ -308,11 +343,28 @@ export class AssetschartComponent implements OnDestroy {
 
     this.events.emit('onClick:Event', setDateRange);
 
-    /*this.chartnewData.forEach((element) => {
-     element.dateAxis.groupCount = 24 * 31;
-    });*/
+    console.log('this.selectedItem', this.selectedItem);
 
-    //this.chart.data = newData;
+    if (this.selectedItem === 'minute') {
+      this.chartnewData.forEach((element) => {
+        element.dateAxis.groupCount = 6 * 24 * 7;
+      });
+    } else if (this.selectedItem === 'hour') {
+      this.chartnewData.forEach((element) => {
+        element.dateAxis.groupCount = 24 * 31;
+      });
+    } else if (this.selectedItem === 'day') {
+      this.chartnewData.forEach((element) => {
+        element.dateAxis.groupCount = 30 * 2;
+      });
+    } else {
+      this.chartnewData.forEach((element) => {
+        element.dateAxis.groupCount = 365;
+      });
+    }
+
+    this.chart.data = this.chartnewData;
+
   }
 
   public ngOnDestroy() {

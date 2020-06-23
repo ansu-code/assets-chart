@@ -41,14 +41,16 @@ export class AppComponent implements AfterViewInit, OnDestroy {
 
   public async getData(event, label) {
 
+/*
     this.measName = label;
+*/
 
     try {
       if (event) {
 
         console.log('this.accessToken', this.accessToken);
 
-        this.response = await this.api.post('SolarSightWS/generic/pg/selectFrom',
+ /*       this.data = await this.api.post('SolarSightWS/generic/pg/selectFrom',
           {
             "keySpace": "iot",
             "tableName": "asset_meas_by_min_hist",
@@ -56,7 +58,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
             "cols": ["site_ref_key", "asset_ref_key", "meas_name", "meas_date"],
             "andConditions": [
               {"col": "asset_ref_key", "operator": "IN", "values": ["TEPSOL_SITE_001_110101"]},
-              {"col": "meas_name", "operator": "IN", "values": [this.measName]},
+              {"col": "meas_name", "operator": "IN", "values": [label]},
               {"col": "meas_date", "operator": ">=", "value": this.first},
               {"col": "meas_date", "operator": "<=", "value": this.last}
             ],
@@ -65,15 +67,18 @@ export class AppComponent implements AfterViewInit, OnDestroy {
           }, this.accessToken);
 
 
-        let data = [];
-        const result = get(this.response, 'result', []);
 
-        each(result, function (chartResult) {
-          const data1 = JSON.parse(chartResult);
-          data.push({ date: data1.meas_time, value: data1.meas_num_v, unit: 'kwh'});
-        });
+        let data = get(this.data, 'result', []);
+*/
 
-        this.events.emit('asset:Data', data);
+        this.data = [
+          {date: '2019-02-05T10:00:01+00:00', value: 3.26, unit: 'kwh'},
+          {date: '2019-08-07T10:00:01+00:00', value: 17.26, unit: 'kwh'},
+          {date: '2020-05-07T10:00:01+00:00', value: 37.26, unit: 'kwh'},
+          {date: '2020-10-07T10:00:01+00:00', value: 97.26, unit: 'kwh'}
+        ];
+
+        this.events.emit('asset:Data', this.data);
 
       }
     } catch (error) {
