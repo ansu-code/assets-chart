@@ -5,6 +5,7 @@ import { get, each, map, filter } from 'lodash';
 import { ChartService } from '../../services/chart.service';
 import { EventsService } from '../../services/events.service';
 import * as moment from 'moment';
+import set = Reflect.set;
 
 @Component({
   selector: 'app-assets-chart',
@@ -22,6 +23,7 @@ export class AssetschartComponent implements OnDestroy {
   public measName: any;
 
   @Input() data: any[];
+  @Output() dateRange: EventEmitter<any> = new EventEmitter();
   @Output() selectedValue: EventEmitter<any> = new EventEmitter();
 
   constructor(private zone: NgZone, private chartService: ChartService, public events: EventsService) {
@@ -241,7 +243,8 @@ export class AssetschartComponent implements OnDestroy {
 
       setDateRange.push({first: first, last: last});
 
-      this.events.emit('onClick:Event', setDateRange);
+      this.dateRange.emit(setDateRange);
+      this.events.emit('onClick:Event');
       this.selectedValue.emit(this.selectedItem);
 
       if (this.selectedItem === 'minute') {
@@ -284,7 +287,8 @@ export class AssetschartComponent implements OnDestroy {
 
     this.lastValue = first;
 
-    this.events.emit('onClick:Event', setDateRange);
+    this.dateRange.emit(setDateRange);
+    this.events.emit('onClick:Event');
     this.selectedValue.emit(this.selectedItem);
 
     if (this.selectedItem === 'minute') {
@@ -339,9 +343,9 @@ export class AssetschartComponent implements OnDestroy {
 
     this.lastValue = first;
 
+    this.dateRange.emit(setDateRange);
+    this.events.emit('onClick:Event');
     this.selectedValue.emit(this.selectedItem);
-
-    this.events.emit('onClick:Event', setDateRange);
 
     console.log('this.selectedItem', this.selectedItem);
 

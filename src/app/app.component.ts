@@ -17,11 +17,12 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   public first = '2019-06-01';
   public last = '2019-08-07';
   public selectedItem = 'month';
+  public dateRange: any[];
 
   constructor(private http: HttpClient, private api: ApiService, public events: EventsService) {
-    events.listen('onClick:Event', async (setDateRange) => {
-      this.first = setDateRange[0].first;
-      this.last = setDateRange[0].last;
+    events.listen('onClick:Event', async () => {
+      this.first = this.dateRange[0].first;
+      this.last = this.dateRange[0].last;
       this.getData(true, this.measName);
       console.log('this.first', this.first);
       console.log('this.last', this.last);
@@ -89,6 +90,11 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   public getSelectedItem(selectedItem) {
     this.selectedItem = selectedItem;
     console.log('this.selectedItem', this.selectedItem);
+  }
+
+  public getDateRange(dateRange) {
+    this.dateRange = dateRange;
+    console.log('this.dateRange', this.dateRange);
   }
 
   public ngOnDestroy() {
