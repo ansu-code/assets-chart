@@ -213,13 +213,11 @@ export class AssetschartComponent implements OnDestroy {
         this.setRange(value, days);
         return;
       case 'previous':
-        console.log('previous', value);
-
-        return 'previous';
+        this.setPreviousRange(value);
+        return;
       case 'next':
-        console.log('next', value);
-
-        return 'next';
+        this.setNextRange(value);
+        return;
     }
   }
 
@@ -231,6 +229,8 @@ export class AssetschartComponent implements OnDestroy {
       const last = moment().format('YYYY-MM-DD');
 
       const setDateRange = [];
+      this.lastValue = parseInt(last);
+      console.log('this',this.lastValue);
       setDateRange.push({first: first, last: last});
 
       this.events.emit('onClick:Event', setDateRange);
@@ -242,6 +242,55 @@ export class AssetschartComponent implements OnDestroy {
       //this.chart.data = newData;
   }
 
+  public setPreviousRange(value) {
+    this.selectedItem = value;
+
+    let first;
+
+    if (this.selectedItem === 'minute') {
+      first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 7);
+    }
+    if (this.selectedItem === 'hour' || this.selectedItem === 'day') {
+      first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 30);
+    }
+    const last = moment().format('YYYY-MM-DD');
+
+    const setDateRange = [];
+    setDateRange.push({first: first, last: last});
+
+    this.events.emit('onClick:Event', setDateRange);
+
+    /*this.chartnewData.forEach((element) => {
+     element.dateAxis.groupCount = 24 * 31;
+    });*/
+
+    //this.chart.data = newData;
+  }
+
+  public setNextRange(value) {
+    this.selectedItem = value;
+
+    let first;
+
+    if (this.selectedItem === 'minute') {
+      first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() + 7);
+    }
+    if (this.selectedItem === 'hour' || this.selectedItem === 'day') {
+      first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() + 30);
+    }
+    const last = moment().format('YYYY-MM-DD');
+
+    const setDateRange = [];
+    setDateRange.push({first: first, last: last});
+
+    this.events.emit('onClick:Event', setDateRange);
+
+    /*this.chartnewData.forEach((element) => {
+     element.dateAxis.groupCount = 24 * 31;
+    });*/
+
+    //this.chart.data = newData;
+  }
 
   public ngOnDestroy() {
     this.zone.runOutsideAngular(() => {
