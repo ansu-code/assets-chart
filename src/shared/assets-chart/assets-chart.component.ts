@@ -259,7 +259,6 @@ export class AssetschartComponent implements OnDestroy {
 
 
     first = moment(first).format('YYYY-MM-DD');
-    const last = moment().format('YYYY-MM-DD');
 
     console.log('first-chart.ts', first);
     console.log('last-chart.ts', this.lastValue);
@@ -284,18 +283,25 @@ export class AssetschartComponent implements OnDestroy {
     let first;
 
     if (this.selectedItem === 'minute') {
+
       first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() + 7);
+      this.lastValue = new Date(first).setDate(new Date(first).getDate() + 7);
+      this.lastValue = moment(this.lastValue).format('YYYY-MM-DD');
+
     } else if (this.selectedItem === 'hour' || this.selectedItem === 'day') {
+
       first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() + 30);
+      this.lastValue = new Date(first).setDate(new Date(first).getDate() + 30);
+      this.lastValue = moment(this.lastValue).format('YYYY-MM-DD');
+
     } else {
+
       first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() + 365);
+      this.lastValue = new Date(first).setDate(new Date(first).getDate() + 365);
+      this.lastValue = moment(this.lastValue).format('YYYY-MM-DD');
     }
 
     first = moment(first).format('YYYY-MM-DD');
-    const last = moment().format('YYYY-MM-DD');
-
-    console.log('first-chart', first);
-    console.log('last-chart', this.lastValue);
 
     const setDateRange = [];
     setDateRange.push({first: first, last: this.lastValue});
