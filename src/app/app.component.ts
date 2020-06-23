@@ -23,7 +23,8 @@ export class AppComponent implements AfterViewInit, OnDestroy {
       this.first = setDateRange[0].first;
       this.last = setDateRange[0].last;
       this.getData(true, this.measName);
-      console.log('value', this.first);
+      console.log('this.first', this.first);
+      console.log('this.last', this.last);
     });
   }
 

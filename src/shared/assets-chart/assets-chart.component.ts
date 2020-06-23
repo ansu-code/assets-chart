@@ -251,19 +251,23 @@ export class AssetschartComponent implements OnDestroy {
 
     if (this.selectedItem === 'minute') {
       first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 7);
-    }
-    if (this.selectedItem === 'hour' || this.selectedItem === 'day') {
+    } else if (this.selectedItem === 'hour' || this.selectedItem === 'day') {
       first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 30);
+    } else {
+      first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 365);
     }
+
 
     first = moment(first).format('YYYY-MM-DD');
     const last = moment().format('YYYY-MM-DD');
-    this.lastValue = first;
 
-    console.log('first-chart', first);
+    console.log('first-chart.ts', first);
+    console.log('last-chart.ts', this.lastValue);
 
     const setDateRange = [];
-    setDateRange.push({first: first, last: last});
+    setDateRange.push({first: first, last: this.lastValue});
+
+    this.lastValue = first;
 
     this.events.emit('onClick:Event', setDateRange);
     this.selectedValue.emit(this.selectedItem);
@@ -281,19 +285,22 @@ export class AssetschartComponent implements OnDestroy {
 
     if (this.selectedItem === 'minute') {
       first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() + 7);
-    }
-    if (this.selectedItem === 'hour' || this.selectedItem === 'day') {
+    } else if (this.selectedItem === 'hour' || this.selectedItem === 'day') {
       first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() + 30);
+    } else {
+      first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() + 365);
     }
 
     first = moment(first).format('YYYY-MM-DD');
     const last = moment().format('YYYY-MM-DD');
 
-    console.log('next-chart', first);
-    this.lastValue = first;
+    console.log('first-chart', first);
+    console.log('last-chart', this.lastValue);
 
     const setDateRange = [];
-    setDateRange.push({first: first, last: last});
+    setDateRange.push({first: first, last: this.lastValue});
+
+    this.lastValue = first;
 
     this.selectedValue.emit(this.selectedItem);
 
