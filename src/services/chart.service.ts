@@ -31,11 +31,11 @@ export class ChartService {
     });
   }
 
-  public setSeries(chart, name) {
+  public setSeries(chart) {
 
     let series = chart.series.push(new am4charts.LineSeries());
 
-    series.name = name;
+    series.name = 'name';
 
     let i = 1;
     chart.data.forEach((element) => {

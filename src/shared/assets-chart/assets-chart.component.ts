@@ -20,7 +20,7 @@ export class AssetschartComponent implements OnDestroy {
   public lastValue: any;
   public selectedItem = 'month';
   public chartnewData: any;
-  public measName: any;
+  public range: any;
 
   @Input() data: any[];
   @Output() dateRange: EventEmitter<any> = new EventEmitter();
@@ -37,11 +37,12 @@ export class AssetschartComponent implements OnDestroy {
     console.log('data', response);
 
     const data = [];
-    each(response, function (chartResult) {
+    each(response.result, function (chartResult) {
       const data1 = JSON.parse(chartResult);
       data.push({ date: data1.meas_time, value: data1.meas_num_v, unit: 'kwh'});
     });
 
+    this.range = response.setRange;
     await this.createChart(data);
 
   }
@@ -57,7 +58,7 @@ export class AssetschartComponent implements OnDestroy {
 
     await this.chartService.getDateAxis(this.chart);
     await this.chartService.getValueAxis(this.chart);
-    await this.chartService.setSeries(this.chart, this.measName);
+    await this.chartService.setSeries(this.chart);
     await this.chartService.chartAxis(this.chart);
     await this.chartService.renderChart(this.chart);
 
@@ -69,28 +70,10 @@ export class AssetschartComponent implements OnDestroy {
   }
 
   public getEvent(value) {
-    let days = 365;
 
     switch (value) {
       default:
-        days = 365;
-        this.setRange(value, days);
-        return 'month';
-      case 'month':
-        days = 365;
-        this.setRange(value, days);
-        return;
-      case 'day':
-        days = 31;
-        this.setRange(value, days);
-        return;
-      case 'hour':
-        days = 31;
-        this.setRange(value, days);
-        return;
-      case 'minute':
-        days = 8;
-        this.setRange(value, days);
+        this.setRange(value);
         return;
       case 'previous':
         this.setPreviousRange();
@@ -102,16 +85,28 @@ export class AssetschartComponent implements OnDestroy {
   }
 
 
-  public setRange(value, days) {
+  public setRange(value) {
       this.selectedItem = value;
+      console.log('selectedItem', this.selectedItem);
 
-      const first = moment().subtract('days', days).format('YYYY-MM-DD');
-      const last = moment().format('YYYY-MM-DD');
+      this.lastValue = this.range[0].first;
+      let first;
+
+      if (this.selectedItem === 'minute') {
+        first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 8);
+      } else if (this.selectedItem === 'hour' || this.selectedItem === 'day') {
+        first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 31);
+      } else {
+        first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 365);
+      }
+
+      first = moment(first).format('YYYY-MM-DD');
 
       const setDateRange = [];
+      setDateRange.push({first: first, last: this.lastValue});
+
       this.lastValue = first;
 
-      setDateRange.push({first: first, last: last});
 
       this.dateRange.emit(setDateRange);
       this.events.emit('onClick:Event');

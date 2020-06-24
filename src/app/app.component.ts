@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../services/api.service';
 import { EventsService } from '../services/events.service';
 import { get, each, map, filter } from 'lodash';
+import {first} from "rxjs/operators";
 
 @Component({
   selector: 'app-root',
@@ -63,7 +64,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
             "orderType": "ASC"
           }, this.accessToken);
 
-        this.data = get(this.data, 'result', []);
+        this.data.setRange = [{first: this.first, last: this.last}];
 
         this.events.emit('asset:Data', this.data);
 
