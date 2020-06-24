@@ -25,9 +25,9 @@ export class AppComponent implements AfterViewInit {
   public async ngAfterViewInit() {
     const response = await this.api.post('ipredictapi/oidc/login',
       {
-        "partyId":"TEPSOL",
-        "username":"tepsoladmin1",
-        "passwd":"activate"
+        "partyId": "TEPSOL",
+        "username": "tepsoladmin1",
+        "passwd": "activate"
       });
 
     this.accessToken = response.result.access_token;
@@ -40,7 +40,7 @@ export class AppComponent implements AfterViewInit {
 
         console.log('this.accessToken', this.accessToken);
 
-        this.data = await this.api.post('SolarSightWS/generic/pg/selectFrom',
+        /*this.data = await this.api.post('SolarSightWS/generic/pg/selectFrom',
           {
             "keySpace": "iot",
             "tableName": "asset_meas_by_min_hist",
@@ -54,11 +54,16 @@ export class AppComponent implements AfterViewInit {
             ],
             "orderBy": "meas_date",
             "orderType": "ASC"
-          }, this.accessToken);
+          }, this.accessToken);*/
 
-        this.data.setRange = [{first: this.first, last: this.last}];
+        fetch('assets/data.json').then(res => res.json())
+          .then(json => {
+            this.events.emit('asset:Data', json);
+          });
 
-        this.events.emit('asset:Data', this.data);
+       // this.data.setRange = [{first: '2019-06-01', last: '2019-08-07'}];
+
+       // this.events.emit('asset:Data', this.data);
 
       }
     } catch (error) {
@@ -82,5 +87,4 @@ export class AppComponent implements AfterViewInit {
     this.dateRange = dateRange;
     console.log('this.dateRange', this.dateRange);
   }
-
 }

@@ -33,20 +33,38 @@ export class AssetschartComponent implements OnDestroy {
 
   public async getData(response) {
 
-    console.log('data', response);
+    console.log('response', response);
 
-    if (!isEmpty(response.result)) {
+    this.data = _(response)
+      .groupBy('meas_name')
+      .map(function(group, name) {
+      //  const date = date +`${key}`;
+        return {
+          name,
+          data: [{
+            date: map(group, 'meas_date'),
+            value: map(group, 'meas_num_v')
+          }]
+        };
+      })
+      .value();
+
+    console.log('groupData', this.data);
+
+    /*if (!isEmpty(response)) {
       const data = [];
-      each(response.result, function (chartResult) {
+      /!*each(response.result, function (chartResult) {
         const data1 = JSON.parse(chartResult);
         data.push({ date: data1.meas_time, value: data1.meas_num_v, unit: 'kwh', name: data1.meas_name});
-      });
+      });*!/
+
+      console.log('data', response);
 
       this.range = response.setRange;
-      await this.createChart(data);
+      // await this.createChart(data);
     } else {
         alert('There is no data');
-    }
+    }*/
   }
 
   public async createChart(data) {
