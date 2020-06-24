@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../services/api.service';
 import { EventsService } from '../services/events.service';
 import { get, each, map, filter } from 'lodash';
-import {first} from "rxjs/operators";
 
 @Component({
   selector: 'app-root',
