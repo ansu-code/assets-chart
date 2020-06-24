@@ -35,11 +35,9 @@ export class ChartService {
 
     let series = chart.series.push(new am4charts.LineSeries());
 
-    series.name = 'name';
-
     let i = 1;
     chart.data.forEach((element) => {
-
+      series.name = element.name;
       series.dataFields.dateX = "date";
       series.dataFields.valueY = "value";
       series.yAxis = element.valueAxis;

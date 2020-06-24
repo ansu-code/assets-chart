@@ -1,11 +1,10 @@
 import {Component, NgZone, OnDestroy, Input, Output, EventEmitter} from '@angular/core';
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
-import { get, each, map, filter } from 'lodash';
+import { get, each, map, filter, isEmpty } from 'lodash';
 import { ChartService } from '../../services/chart.service';
 import { EventsService } from '../../services/events.service';
 import * as moment from 'moment';
-import set = Reflect.set;
 
 @Component({
   selector: 'app-assets-chart',
@@ -36,15 +35,18 @@ export class AssetschartComponent implements OnDestroy {
 
     console.log('data', response);
 
-    const data = [];
-    each(response.result, function (chartResult) {
-      const data1 = JSON.parse(chartResult);
-      data.push({ date: data1.meas_time, value: data1.meas_num_v, unit: 'kwh'});
-    });
+    if (!isEmpty(response.result)) {
+      const data = [];
+      each(response.result, function (chartResult) {
+        const data1 = JSON.parse(chartResult);
+        data.push({ date: data1.meas_time, value: data1.meas_num_v, unit: 'kwh', name: data1.meas_name});
+      });
 
-    this.range = response.setRange;
-    await this.createChart(data);
-
+      this.range = response.setRange;
+      await this.createChart(data);
+    } else {
+        alert('There is no data');
+    }
   }
 
   public async createChart(data) {
