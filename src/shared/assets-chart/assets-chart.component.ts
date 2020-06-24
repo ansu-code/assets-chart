@@ -23,7 +23,7 @@ export class AssetschartComponent implements OnDestroy {
 
   @Input() data: any[];
   @Output() dateRange: EventEmitter<any> = new EventEmitter();
-  @Output() selectedValue: EventEmitter<any> = new EventEmitter();
+  @Output() rangeChangeEvent: EventEmitter<any> = new EventEmitter();
 
   constructor(private zone: NgZone, private chartService: ChartService, public events: EventsService) {
     events.listen('asset:Data', async (response) => {
@@ -111,8 +111,7 @@ export class AssetschartComponent implements OnDestroy {
 
 
       this.dateRange.emit(setDateRange);
-      this.events.emit('onClick:Event');
-      this.selectedValue.emit(this.selectedItem);
+      this.rangeChangeEvent.emit(this.selectedItem);
 
       if (this.selectedItem === 'minute') {
         this.chartnewData.forEach((element) => {
@@ -155,8 +154,7 @@ export class AssetschartComponent implements OnDestroy {
     this.lastValue = first;
 
     this.dateRange.emit(setDateRange);
-    this.events.emit('onClick:Event');
-    this.selectedValue.emit(this.selectedItem);
+    this.rangeChangeEvent.emit(this.selectedItem);
 
     if (this.selectedItem === 'minute') {
       this.chartnewData.forEach((element) => {
@@ -211,8 +209,7 @@ export class AssetschartComponent implements OnDestroy {
     this.lastValue = first;
 
     this.dateRange.emit(setDateRange);
-    this.events.emit('onClick:Event');
-    this.selectedValue.emit(this.selectedItem);
+    this.rangeChangeEvent.emit(this.selectedItem);
 
     console.log('this.selectedItem', this.selectedItem);
 

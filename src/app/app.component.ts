@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnDestroy} from '@angular/core';
+import { AfterViewInit, Component, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../services/api.service';
 import { EventsService } from '../services/events.service';
@@ -9,7 +9,7 @@ import { get, each, map, filter } from 'lodash';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements AfterViewInit, OnDestroy {
+export class AppComponent implements AfterViewInit {
   title = 'assets-ui';
   private accessToken: any;
   public data: any;
@@ -20,13 +20,6 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   public dateRange: any[];
 
   constructor(private http: HttpClient, private api: ApiService, public events: EventsService) {
-    events.listen('onClick:Event', async () => {
-      this.first = this.dateRange[0].first;
-      this.last = this.dateRange[0].last;
-      this.getData(true, this.measName);
-      console.log('this.first', this.first);
-      console.log('this.last', this.last);
-    });
   }
 
   public async ngAfterViewInit() {
@@ -73,18 +66,21 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  public getSelectedItem(selectedItem) {
+  public getRangeChangeEvent(selectedItem) {
     this.selectedItem = selectedItem;
     console.log('this.selectedItem', this.selectedItem);
+
+    this.first = this.dateRange[0].first;
+    this.last = this.dateRange[0].last;
+    this.getData(true, this.measName);
+
+    console.log('this.first', this.first);
+    console.log('this.last', this.last);
   }
 
   public getDateRange(dateRange) {
     this.dateRange = dateRange;
     console.log('this.dateRange', this.dateRange);
-  }
-
-  public ngOnDestroy() {
-    this.events.dispose('onClick:Event');
   }
 
 }
