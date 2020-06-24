@@ -1,10 +1,10 @@
 import {Component, NgZone, OnDestroy, Input, Output, EventEmitter} from '@angular/core';
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
-import { get, each, map, filter, isEmpty } from 'lodash';
 import { ChartService } from '../../services/chart.service';
 import { EventsService } from '../../services/events.service';
 import * as moment from 'moment';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-assets-chart',
@@ -42,8 +42,8 @@ export class AssetschartComponent implements OnDestroy {
         return {
           name,
           data: [{
-            date: map(group, 'meas_date'),
-            value: map(group, 'meas_num_v')
+            date: _.map(group, 'meas_date'),
+            value: _.map(group, 'meas_num_v')
           }]
         };
       })
