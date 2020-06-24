@@ -42,16 +42,12 @@ export class AppComponent implements AfterViewInit, OnDestroy {
 
   public async getData(event, label) {
 
-/*
-    this.measName = label;
-*/
-
     try {
       if (event) {
 
         console.log('this.accessToken', this.accessToken);
 
- /*       this.data = await this.api.post('SolarSightWS/generic/pg/selectFrom',
+        this.data = await this.api.post('SolarSightWS/generic/pg/selectFrom',
           {
             "keySpace": "iot",
             "tableName": "asset_meas_by_min_hist",
@@ -67,17 +63,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
             "orderType": "ASC"
           }, this.accessToken);
 
-
-
-        let data = get(this.data, 'result', []);
-*/
-
-        this.data = [
-          {date: '2019-02-05T10:00:01+00:00', value: 3.26, unit: 'kwh'},
-          {date: '2019-08-07T10:00:01+00:00', value: 17.26, unit: 'kwh'},
-          {date: '2020-05-07T10:00:01+00:00', value: 37.26, unit: 'kwh'},
-          {date: '2020-10-07T10:00:01+00:00', value: 97.26, unit: 'kwh'}
-        ];
+        this.data = get(this.data, 'result', []);
 
         this.events.emit('asset:Data', this.data);
 
