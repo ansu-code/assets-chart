@@ -4,7 +4,7 @@ import * as am4charts from "@amcharts/amcharts4/charts";
 import { ChartService } from '../../services/chart.service';
 import { EventsService } from '../../services/events.service';
 import * as moment from 'moment';
-import { empty, each } from 'lodash';
+import { isEmpty, each, map, chain } from 'lodash';
 
 @Component({
   selector: 'app-assets-chart',
@@ -31,34 +31,27 @@ export class AssetschartComponent implements OnDestroy {
   }
 
   public async getData(response) {
-   /* let i = 0;
 
-    this.data = _(response)
-      .groupBy('meas_name')
-      .map(function(group, name) {
-        i++;
-        return {
-          name,
-          data: [{
-            [`date${i}`]: _.map(group, 'meas_date'),
-            [`value${i}`]: _.map(group, 'meas_num_v')
-          }]
-        };
-      })
-      .value();
+    let data = [];
 
-    console.log('groupData', this.data);*/
+    each(response.result, function (chartResult) {
+      const data1 = JSON.parse(chartResult);
+      data.push({ date: data1.meas_time, value: data1.meas_num_v, unit: 'kwh', name: data1.meas_name});
+    });
 
-      const data = [];
-      each(response.result, function (chartResult) {
-        const data1 = JSON.parse(chartResult);
-        data.push({ date: data1.meas_time, value: data1.meas_num_v, unit: 'kwh', name: data1.meas_name});
-      });
+    this.data = Object.values(data.reduce((setData, { name, value, date, unit }) => {
+      setData[name] = setData[name] || { name, data: [] };
+      setData[name].data.push({ value, date, unit, name });
+      return acc;
+    }, {}));
 
-      console.log('data', response);
+
+    console.log('groupdata', this.data);
 
       this.range = response.setRange;
-      await this.createChart(data);
+
+      await this.createChart(this.data);
+
 
   }
 
@@ -67,7 +60,9 @@ export class AssetschartComponent implements OnDestroy {
 
     this.chart = am4core.create("chartdiv", am4charts.XYChart);
     this.chart.paddingRight = 40;
-    this.chart.data = data;
+    this.chart.data = data[0].data;
+
+    console.log('data', this.chart.data);
 
     // Set the xAxes and yAxes
 

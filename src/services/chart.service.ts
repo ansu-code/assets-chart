@@ -5,7 +5,9 @@ import * as am4core from "@amcharts/amcharts4/core";
 @Injectable()
 export class ChartService {
   valueAxis: any;
+  valueAxis2: any;
   dateAxis: any;
+  dateAxis2: any;
 
   constructor() {
 
@@ -19,14 +21,27 @@ export class ChartService {
     this.dateAxis.groupData = true;
     this.dateAxis.renderer.grid.template.strokeOpacity = 0.07;
 
+    this.dateAxis2 = chart.xAxes.push(new am4charts.DateAxis());
+    this.dateAxis2.renderer.grid.template.location = 0;
+    this.dateAxis2.renderer.labels.template.fill = am4core.color("#dfcc64");
+    this.dateAxis2.groupData = true;
+    this.dateAxis2.groupCount = 13;
+
     if (selectedItem === 'minute') {
       this.dateAxis.groupCount = 6 * 24 * 8;
+      this.dateAxis2.groupCount = 6 * 24 * 8;
     } else if (this.selectedItem === 'hour') {
       this.dateAxis.groupCount = 24 * 31;
+      this.dateAxis2.groupCount = 24 * 31;
+
     } else if (this.selectedItem === 'day') {
       this.dateAxis.groupCount = 31;
+      this.dateAxis2.groupCount = 31;
+
     } else {
-        this.dateAxis.groupCount = 365;
+       this.dateAxis.groupCount = 365;
+       this.dateAxis2.groupCount = 365;
+
     }
   }
 
@@ -37,15 +52,19 @@ export class ChartService {
     this.valueAxis.renderer.minWidth = 60;
     this.valueAxis.renderer.grid.template.strokeOpacity = 0.07;
 
+    this.valueAxis2 = chart.yAxes.push(new am4charts.ValueAxis());
+    this.valueAxis2.tooltip.disabled = true;
+    this.valueAxis2.renderer.labels.template.fill = am4core.color("#dfcc64");
+    this.valueAxis2.renderer.minWidth = 60;
+    this.valueAxis2.syncWithAxis = this.valueAxis;
+
   }
 
   public setSeries(chart) {
 
     const series = chart.series.push(new am4charts.LineSeries());
 
-    let i = 0;
-    chart.data.forEach((element) => {
-      series.name = element.name;
+      series.name = chart.data.name;
       series.dataFields.dateX = "date";
       series.dataFields.valueY = "value";
       series.yAxis = this.valueAxis;
@@ -53,8 +72,17 @@ export class ChartService {
       series.tooltipText = "{valueY.value} {unit}";
       series.fill = am4core.color("#e59165");
       series.stroke = am4core.color("#e59165");
-      i++;
-    });
+
+    const series2 = chart.series.push(new am4charts.LineSeries());
+
+      series2.name = chart.data.name;
+      series2.dataFields.dateX = "date2";
+      series2.dataFields.valueY = "value2";
+      series2.yAxis = this.valueAxis2;
+      series2.xAxis = this.dateAxis2;
+      series2.tooltipText = "{valueY.value} {unit}";
+      series2.fill = am4core.color("#e59165");
+      series2.stroke = am4core.color("#e59165");
   }
 
   public chartAxis(chart) {

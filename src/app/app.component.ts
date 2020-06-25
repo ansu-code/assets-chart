@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy } from '@angular/core';
+import { AfterViewInit, Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../services/api.service';
 import { EventsService } from '../services/events.service';
@@ -39,6 +39,7 @@ export class AppComponent implements AfterViewInit {
     try {
       if (event) {
         this.measName.push(label);
+        console.log('this.last', this.last);
 
         this.data = await this.api.post('SolarSightWS/generic/pg/selectFrom',
           {
@@ -74,6 +75,7 @@ export class AppComponent implements AfterViewInit {
     this.last = this.dateRange[0].last;
     this.getData(true, this.measName);
 
+    console.log('this.first', this.measName);
     console.log('this.first', this.first);
     console.log('this.last', this.last);
   }
