@@ -32,18 +32,17 @@ export class AssetschartComponent implements OnDestroy {
   }
 
   public async getData(response) {
-
-    console.log('response', response);
+    let i = 0;
 
     this.data = _(response)
       .groupBy('meas_name')
       .map(function(group, name) {
-      //  const date = date +`${key}`;
+        i++;
         return {
           name,
           data: [{
-            date: _.map(group, 'meas_date'),
-            value: _.map(group, 'meas_num_v')
+            [`date${i}`]: _.map(group, 'meas_date'),
+            [`value${i}`]: _.map(group, 'meas_num_v')
           }]
         };
       })
