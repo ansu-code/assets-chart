@@ -2,7 +2,7 @@ import { AfterViewInit, Component, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../services/api.service';
 import { EventsService } from '../services/events.service';
-import { get, each, map, filter } from 'lodash';
+import { get, each, map, filter, merge } from 'lodash';
 
 @Component({
   selector: 'app-root',
@@ -18,6 +18,7 @@ export class AppComponent implements AfterViewInit {
   public last = '2019-08-07';
   public selectedItem = 'month';
   public dateRange: any[];
+  public measName = [];
 
   constructor(private http: HttpClient, private api: ApiService, public events: EventsService) {
   }
@@ -37,8 +38,7 @@ export class AppComponent implements AfterViewInit {
 
     try {
       if (event) {
-
-        console.log('this.accessToken', this.accessToken);
+        this.measName.push(label);
 
         this.data = await this.api.post('SolarSightWS/generic/pg/selectFrom',
           {
@@ -48,18 +48,13 @@ export class AppComponent implements AfterViewInit {
             "cols": ["site_ref_key", "asset_ref_key", "meas_name", "meas_date"],
             "andConditions": [
               {"col": "asset_ref_key", "operator": "IN", "values": ["TEPSOL_SITE_001_110101"]},
-              {"col": "meas_name", "operator": "IN", "values": [label]},
+              {"col": "meas_name", "operator": "IN", "values": this.measName},
               {"col": "meas_date", "operator": ">=", "value": this.first},
               {"col": "meas_date", "operator": "<=", "value": this.last}
             ],
             "orderBy": "meas_date",
             "orderType": "ASC"
           }, this.accessToken);
-
-        /*fetch('assets/data.json').then(res => res.json())
-          .then(json => {
-            this.events.emit('asset:Data', json);
-          });*/
 
         this.data.setRange = [{first: '2019-06-01', last: '2019-08-07'}];
 

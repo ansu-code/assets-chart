@@ -18,7 +18,6 @@ export class AssetschartComponent implements OnDestroy {
   private chart: am4charts.XYChart;
   public lastValue: any;
   public selectedItem = 'month';
-  public chartnewData: any;
   public range: any;
 
   @Input() data: any[];
@@ -94,7 +93,6 @@ export class AssetschartComponent implements OnDestroy {
         return;
     }
   }
-
 
   public setRange(value) {
       this.selectedItem = value;
