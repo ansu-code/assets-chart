@@ -8,32 +8,38 @@ export class ChartService {
 
   }
 
-  public getDateAxis(chart) {
-    let dateAxis = chart.xAxes.push(new am4charts.DateAxis());
+  public getDateAxis(chart, selectedItem) {
+
+    const dateAxis = chart.xAxes.push(new am4charts.DateAxis());
     dateAxis.renderer.grid.template.location = 0;
     dateAxis.renderer.labels.template.fill = am4core.color("#e59165");
     dateAxis.groupData = true;
-    dateAxis.groupCount = 13;
 
-    chart.data.forEach((element) => {
-      element.dateAxis = dateAxis;
-    });
+    if (selectedItem === 'minute') {
+        dateAxis.groupCount = 6 * 24 * 8;
+    } else if (selectedItem === 'hour') {
+        dateAxis.groupCount = 24 * 31;
+    } else if (selectedItem === 'day') {
+        dateAxis.groupCount = 31;
+    } else {
+        dateAxis.groupCount = 365;
+    }
+
+    chart.dateAxis = dateAxis;
   }
 
   public getValueAxis(chart) {
-    let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+    const valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
     valueAxis.tooltip.disabled = true;
     valueAxis.renderer.labels.template.fill = am4core.color("#e59165");
     valueAxis.renderer.minWidth = 60;
+    chart.valueAxis = valueAxis;
 
-    chart.data.forEach((element) => {
-      element.valueAxis = valueAxis;
-    });
   }
 
   public setSeries(chart) {
 
-    let series = chart.series.push(new am4charts.LineSeries());
+    const series = chart.series.push(new am4charts.LineSeries());
 
     let i = 1;
     chart.data.forEach((element) => {

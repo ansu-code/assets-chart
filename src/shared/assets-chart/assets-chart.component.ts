@@ -60,10 +60,13 @@ export class AssetschartComponent implements OnDestroy {
       console.log('data', response);
 
       this.range = response.setRange;
-      // await this.createChart(data);
+       await this.createChart(data);
     } else {
         alert('There is no data');
     }*/
+
+    await this.createChart(this.data);
+
   }
 
   public async createChart(data) {
@@ -75,7 +78,7 @@ export class AssetschartComponent implements OnDestroy {
 
     // Set the xAxes and yAxes
 
-    await this.chartService.getDateAxis(this.chart);
+    await this.chartService.getDateAxis(this.chart, this.selectedItem);
     await this.chartService.getValueAxis(this.chart);
     await this.chartService.setSeries(this.chart);
     await this.chartService.chartAxis(this.chart);
@@ -126,29 +129,8 @@ export class AssetschartComponent implements OnDestroy {
 
       this.lastValue = first;
 
-
       this.dateRange.emit(setDateRange);
       this.rangeChangeEvent.emit(this.selectedItem);
-
-      if (this.selectedItem === 'minute') {
-        this.chartnewData.forEach((element) => {
-          element.dateAxis.groupCount = 6 * 24 * 8;
-        });
-      } else if (this.selectedItem === 'hour') {
-        this.chartnewData.forEach((element) => {
-          element.dateAxis.groupCount = 24 * 31;
-        });
-      } else if (this.selectedItem === 'day') {
-        this.chartnewData.forEach((element) => {
-          element.dateAxis.groupCount = 31;
-        });
-      } else {
-        this.chartnewData.forEach((element) => {
-          element.dateAxis.groupCount = 365;
-        });
-      }
-
-      this.chart.data = this.chartnewData;
   }
 
   public setPreviousRange() {
@@ -172,24 +154,6 @@ export class AssetschartComponent implements OnDestroy {
 
     this.dateRange.emit(setDateRange);
     this.rangeChangeEvent.emit(this.selectedItem);
-
-    if (this.selectedItem === 'minute') {
-      this.chartnewData.forEach((element) => {
-        element.dateAxis.groupCount = 6 * 24 * 7;
-      });
-    } else if (this.selectedItem === 'hour') {
-      this.chartnewData.forEach((element) => {
-        element.dateAxis.groupCount = 24 * 31;
-      });
-    } else if (this.selectedItem === 'day') {
-      this.chartnewData.forEach((element) => {
-        element.dateAxis.groupCount = 30 * 2;
-      });
-    } else {
-      this.chartnewData.forEach((element) => {
-        element.dateAxis.groupCount = 365;
-      });
-    }
 
     this.chart.data = this.chartnewData;
 
@@ -229,24 +193,6 @@ export class AssetschartComponent implements OnDestroy {
     this.rangeChangeEvent.emit(this.selectedItem);
 
     console.log('this.selectedItem', this.selectedItem);
-
-    if (this.selectedItem === 'minute') {
-      this.chartnewData.forEach((element) => {
-        element.dateAxis.groupCount = 6 * 24 * 7;
-      });
-    } else if (this.selectedItem === 'hour') {
-      this.chartnewData.forEach((element) => {
-        element.dateAxis.groupCount = 24 * 31;
-      });
-    } else if (this.selectedItem === 'day') {
-      this.chartnewData.forEach((element) => {
-        element.dateAxis.groupCount = 30 * 2;
-      });
-    } else {
-      this.chartnewData.forEach((element) => {
-        element.dateAxis.groupCount = 365;
-      });
-    }
 
     this.chart.data = this.chartnewData;
 
