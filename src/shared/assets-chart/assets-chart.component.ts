@@ -77,10 +77,6 @@ export class AssetschartComponent implements OnDestroy {
     await this.chartService.setSeries(this.chart);
     await this.chartService.chartAxis(this.chart);
 
-    // console.log(this.chartData);
-
-
-    this.chartnewData = data;
     this.chart.exporting.menu = new am4core.ExportMenu();
   }
 
