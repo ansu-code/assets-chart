@@ -42,16 +42,14 @@ export class AssetschartComponent implements OnDestroy {
     this.data = Object.values(data.reduce((setData, { name, value, date, unit }) => {
       setData[name] = setData[name] || { name, data: [] };
       setData[name].data.push({ value, date, unit, name });
-      return acc;
+      return setData;
     }, {}));
-
 
     console.log('groupdata', this.data);
 
-      this.range = response.setRange;
+    this.range = response.setRange;
 
-      await this.createChart(this.data);
-
+    await this.createChart(this.data);
 
   }
 
