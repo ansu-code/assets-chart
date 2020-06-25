@@ -4,36 +4,38 @@ import * as am4core from "@amcharts/amcharts4/core";
 
 @Injectable()
 export class ChartService {
+  valueAxis: any;
+  dateAxis: any;
+
   constructor() {
 
   }
 
   public getDateAxis(chart, selectedItem) {
 
-    const dateAxis = chart.xAxes.push(new am4charts.DateAxis());
-    dateAxis.renderer.grid.template.location = 0;
-    dateAxis.renderer.labels.template.fill = am4core.color("#e59165");
-    dateAxis.groupData = true;
+    this.dateAxis = chart.xAxes.push(new am4charts.DateAxis());
+    this.dateAxis.renderer.grid.template.location = 0;
+    this.dateAxis.renderer.labels.template.fill = am4core.color("#e59165");
+    this.dateAxis.groupData = true;
+    this.dateAxis.renderer.grid.template.strokeOpacity = 0.07;
 
     if (selectedItem === 'minute') {
-        dateAxis.groupCount = 6 * 24 * 8;
-    } else if (selectedItem === 'hour') {
-        dateAxis.groupCount = 24 * 31;
-    } else if (selectedItem === 'day') {
-        dateAxis.groupCount = 31;
+      this.dateAxis.groupCount = 6 * 24 * 8;
+    } else if (this.selectedItem === 'hour') {
+      this.dateAxis.groupCount = 24 * 31;
+    } else if (this.selectedItem === 'day') {
+      this.dateAxis.groupCount = 31;
     } else {
-        dateAxis.groupCount = 365;
+        this.dateAxis.groupCount = 365;
     }
-
-    chart.dateAxis = dateAxis;
   }
 
   public getValueAxis(chart) {
-    const valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-    valueAxis.tooltip.disabled = true;
-    valueAxis.renderer.labels.template.fill = am4core.color("#e59165");
-    valueAxis.renderer.minWidth = 60;
-    chart.valueAxis = valueAxis;
+    this.valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+    this.valueAxis.tooltip.disabled = true;
+    this.valueAxis.renderer.labels.template.fill = am4core.color("#e59165");
+    this.valueAxis.renderer.minWidth = 60;
+    this.valueAxis.renderer.grid.template.strokeOpacity = 0.07;
 
   }
 
@@ -41,17 +43,16 @@ export class ChartService {
 
     const series = chart.series.push(new am4charts.LineSeries());
 
-    let i = 1;
+    let i = 0;
     chart.data.forEach((element) => {
       series.name = element.name;
       series.dataFields.dateX = "date";
       series.dataFields.valueY = "value";
-      series.yAxis = element.valueAxis;
-      series.xAxis = element.dateAxis;
+      series.yAxis = this.valueAxis;
+      series.xAxis = this.dateAxis;
       series.tooltipText = "{valueY.value} {unit}";
       series.fill = am4core.color("#e59165");
       series.stroke = am4core.color("#e59165");
-      element.series = series;
       i++;
     });
   }
@@ -59,7 +60,7 @@ export class ChartService {
   public chartAxis(chart) {
     chart.data.forEach((element) => {
       chart.cursor = new am4charts.XYCursor();
-      chart.cursor.xAxis = element.dateAxis;
+      chart.cursor.xAxis = this.dateAxis;
 
       let scrollbarX = new am4charts.XYChartScrollbar();
       chart.scrollbarX = scrollbarX;
@@ -68,13 +69,6 @@ export class ChartService {
       chart.legend.zIndex = 100;
 
       element.scrollbarX = scrollbarX;
-    });
-  }
-
-  public renderChart(chart) {
-    chart.data.forEach((element) => {
-      element.valueAxis.renderer.grid.template.strokeOpacity = 0.07;
-      element.dateAxis.renderer.grid.template.strokeOpacity = 0.07;
     });
   }
 

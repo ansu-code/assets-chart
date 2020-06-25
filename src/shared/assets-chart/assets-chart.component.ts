@@ -4,7 +4,7 @@ import * as am4charts from "@amcharts/amcharts4/charts";
 import { ChartService } from '../../services/chart.service';
 import { EventsService } from '../../services/events.service';
 import * as moment from 'moment';
-import * as _ from 'lodash';
+import { empty, each } from 'lodash';
 
 @Component({
   selector: 'app-assets-chart',
@@ -32,7 +32,7 @@ export class AssetschartComponent implements OnDestroy {
   }
 
   public async getData(response) {
-    let i = 0;
+   /* let i = 0;
 
     this.data = _(response)
       .groupBy('meas_name')
@@ -48,24 +48,18 @@ export class AssetschartComponent implements OnDestroy {
       })
       .value();
 
-    console.log('groupData', this.data);
+    console.log('groupData', this.data);*/
 
-    /*if (!isEmpty(response)) {
       const data = [];
-      /!*each(response.result, function (chartResult) {
+      each(response.result, function (chartResult) {
         const data1 = JSON.parse(chartResult);
         data.push({ date: data1.meas_time, value: data1.meas_num_v, unit: 'kwh', name: data1.meas_name});
-      });*!/
+      });
 
       console.log('data', response);
 
       this.range = response.setRange;
-       await this.createChart(data);
-    } else {
-        alert('There is no data');
-    }*/
-
-    await this.createChart(this.data);
+      await this.createChart(data);
 
   }
 
@@ -82,7 +76,6 @@ export class AssetschartComponent implements OnDestroy {
     await this.chartService.getValueAxis(this.chart);
     await this.chartService.setSeries(this.chart);
     await this.chartService.chartAxis(this.chart);
-    await this.chartService.renderChart(this.chart);
 
     // console.log(this.chartData);
 
@@ -131,6 +124,7 @@ export class AssetschartComponent implements OnDestroy {
 
       this.dateRange.emit(setDateRange);
       this.rangeChangeEvent.emit(this.selectedItem);
+
   }
 
   public setPreviousRange() {
@@ -154,8 +148,6 @@ export class AssetschartComponent implements OnDestroy {
 
     this.dateRange.emit(setDateRange);
     this.rangeChangeEvent.emit(this.selectedItem);
-
-    this.chart.data = this.chartnewData;
 
   }
 
@@ -193,9 +185,6 @@ export class AssetschartComponent implements OnDestroy {
     this.rangeChangeEvent.emit(this.selectedItem);
 
     console.log('this.selectedItem', this.selectedItem);
-
-    this.chart.data = this.chartnewData;
-
   }
 
   public ngOnDestroy() {

@@ -40,7 +40,7 @@ export class AppComponent implements AfterViewInit {
 
         console.log('this.accessToken', this.accessToken);
 
-        /*this.data = await this.api.post('SolarSightWS/generic/pg/selectFrom',
+        this.data = await this.api.post('SolarSightWS/generic/pg/selectFrom',
           {
             "keySpace": "iot",
             "tableName": "asset_meas_by_min_hist",
@@ -54,16 +54,16 @@ export class AppComponent implements AfterViewInit {
             ],
             "orderBy": "meas_date",
             "orderType": "ASC"
-          }, this.accessToken);*/
+          }, this.accessToken);
 
-        fetch('assets/data.json').then(res => res.json())
+        /*fetch('assets/data.json').then(res => res.json())
           .then(json => {
             this.events.emit('asset:Data', json);
-          });
+          });*/
 
-       // this.data.setRange = [{first: '2019-06-01', last: '2019-08-07'}];
+        this.data.setRange = [{first: '2019-06-01', last: '2019-08-07'}];
 
-       // this.events.emit('asset:Data', this.data);
+        this.events.emit('asset:Data', this.data);
 
       }
     } catch (error) {
