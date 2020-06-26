@@ -4,7 +4,8 @@ import * as am4charts from "@amcharts/amcharts4/charts";
 import { ChartService } from '../../services/chart.service';
 import { EventsService } from '../../services/events.service';
 import * as moment from 'moment';
-import { isEmpty, each, map, chain } from 'lodash';
+import { isEmpty, each, map, chain, unionBy, flatten, uniq} from 'lodash';
+import {element} from "protractor";
 
 @Component({
   selector: 'app-assets-chart',
@@ -37,15 +38,14 @@ export class AssetschartComponent implements OnDestroy {
     each(response.result, function (chartResult) {
       const data1 = JSON.parse(chartResult);
       data.push({ date: data1.meas_time, value: data1.meas_num_v, unit: 'kwh', name: data1.meas_name});
+      console.log('data', data);
     });
 
     this.data = Object.values(data.reduce((setData, { name, value, date, unit }) => {
-      setData[name] = setData[name] || { name, data: [] };
+      setData[name] = setData[name] || { data: [] };
       setData[name].data.push({ value, date, unit, name });
       return setData;
     }, {}));
-
-    console.log('groupdata', this.data);
 
     this.range = response.setRange;
 
@@ -54,23 +54,46 @@ export class AssetschartComponent implements OnDestroy {
   }
 
   public async createChart(data) {
+
     // Create Chart
+    let chart = am4core.create("chartdiv", am4charts.XYChart);
+    chart.paddingRight = 40;
 
-    this.chart = am4core.create("chartdiv", am4charts.XYChart);
-    this.chart.paddingRight = 40;
-    this.chart.data = data[0].data;
+    each(data, function (element1) {
 
-    console.log('data', this.chart.data);
+      chart.data = element1.data;
 
-    // Set the xAxes and yAxes
+      console.log('element', chart.data);
 
-    await this.chartService.getDateAxis(this.chart, this.selectedItem);
-    await this.chartService.getValueAxis(this.chart);
-    await this.chartService.setSeries(this.chart);
-    await this.chartService.chartAxis(this.chart);
+      let dateAxis = chart.xAxes.push(new am4charts.DateAxis());
+      dateAxis.renderer.grid.template.location = 0;
+      dateAxis.renderer.labels.template.fill = am4core.color("#e59165");
+      dateAxis.groupData = true;
+      dateAxis.renderer.grid.template.strokeOpacity = 0.07;
 
-    this.chart.exporting.menu = new am4core.ExportMenu();
+      let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+      valueAxis.tooltip.disabled = true;
+      valueAxis.renderer.labels.template.fill = am4core.color("#e59165");
+      valueAxis.renderer.minWidth = 60;
+      valueAxis.renderer.grid.template.strokeOpacity = 0.07;
+
+      const series = chart.series.push(new am4charts.LineSeries());
+
+      series.name = 'name';
+      series.dataFields.dateX = "date";
+      series.dataFields.valueY = "value";
+      series.yAxis = valueAxis;
+      series.xAxis = dateAxis;
+      series.tooltipText = "{valueY.value} {unit}";
+      series.fill = am4core.color("#e59165");
+      series.stroke = am4core.color("#e59165");
+
+    });
+
+    chart.exporting.menu = new am4core.ExportMenu();
+
   }
+
 
   public getEvent(value) {
 

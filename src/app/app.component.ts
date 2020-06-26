@@ -13,9 +13,8 @@ export class AppComponent implements AfterViewInit {
   title = 'assets-ui';
   private accessToken: any;
   public data: any;
-  public measName: any;
   public first = '2019-06-01';
-  public last = '2019-08-07';
+  public last = '2019-8-07';
   public selectedItem = 'month';
   public dateRange: any[];
   public measName = [];
