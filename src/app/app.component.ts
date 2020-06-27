@@ -75,6 +75,7 @@ export class AppComponent implements AfterViewInit {
 
         this.data.setRange = [{first: '2019-06-01', last: '2019-08-07'}];
         this.data.index = this.index;
+        this.data.measName = this.measName;
         this.data.changeInRange = changeInRange;
         console.log(' this.data',  this.data);
 

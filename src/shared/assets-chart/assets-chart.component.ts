@@ -25,7 +25,8 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   public valueAxis: any;
   public series: any;
   public index: any;
-  public changeInRange: boolean = false;
+  public measName: any;
+  public changeInRange = false;
 
   @Input() data: any[];
   @Output() dateRange: EventEmitter<any> = new EventEmitter();
@@ -85,6 +86,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     this.range = response.setRange;
     this.index = response.index;
     this.changeInRange = response.changeInRange;
+    this.measName = response.measName;
 
     this.chart.data = data;
 
@@ -95,7 +97,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   }
 
   public addAxisAndSeries(i) {
-    this.createAxisAndSeries([`date${i}`], [`value${i}`], [`Value${i}`]);
+    this.createAxisAndSeries([`date${i}`], [`value${i}`], this.measName);
   }
 
   public addSeries() {
