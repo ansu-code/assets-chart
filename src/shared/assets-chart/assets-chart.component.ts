@@ -39,16 +39,28 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
   public async ngAfterViewInit() {
     this.chart = am4core.create("chartdiv", am4charts.XYChart);
+    let scrollbarX = new am4charts.XYChartScrollbar();
+
     this.chart.colors.step = 2;
     this.chart.legend = new am4charts.Legend();
     this.chart.cursor = new am4charts.XYCursor();
+    this.chart.scrollbarX = scrollbarX;
+    this.chart.legend.parent = this.chart.plotContainer;
+    this.chart.legend.zIndex = 100;
+
   }
 
   public createAxisAndSeries(date, field, name) {
 
     this.dateAxis = this.chart.xAxes.push(new am4charts.DateAxis());
     this.dateAxis.renderer.minGridDistance = 50;
+    this.dateAxis.renderer.grid.template.location = 0;
+    this.dateAxis.groupData = true;
+    this.dateAxis.renderer.grid.template.strokeOpacity = 0.07;
+
     this.valueAxis = this.chart.yAxes.push(new am4charts.ValueAxis());
+    this.valueAxis.renderer.minWidth = 60;
+    this.valueAxis.renderer.grid.template.strokeOpacity = 0.07;
 
     this.series = this.chart.series.push(new am4charts.LineSeries());
     this.series.dataFields.valueY = field;

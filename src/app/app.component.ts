@@ -14,7 +14,7 @@ export class AppComponent implements AfterViewInit {
   private accessToken: any;
   public data: any;
   public first = '2019-06-01';
-  public last = '2020-8-01';
+  public last = '2020-06-01';
   public selectedItem = 'month';
   public dateRange: any[];
   public measName = [];
