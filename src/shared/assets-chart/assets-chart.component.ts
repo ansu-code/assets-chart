@@ -25,15 +25,16 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   public valueAxis: any;
   public series: any;
   public index: any;
+  public changeInRange: boolean = false;
 
   @Input() data: any[];
   @Output() dateRange: EventEmitter<any> = new EventEmitter();
   @Output() rangeChangeEvent: EventEmitter<any> = new EventEmitter();
+  @Output() timeEvent: EventEmitter<any> = new EventEmitter();
 
   constructor(private zone: NgZone, private chartService: ChartService, public events: EventsService) {
     events.listen('asset:Data', async (response) => {
       await this.getData(response);
-      this.addSeries();
     });
   }
 
@@ -55,7 +56,6 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     this.dateAxis = this.chart.xAxes.push(new am4charts.DateAxis());
     this.dateAxis.renderer.minGridDistance = 50;
     this.dateAxis.renderer.grid.template.location = 0;
-    this.dateAxis.groupData = true;
     this.dateAxis.renderer.grid.template.strokeOpacity = 0.07;
 
     this.valueAxis = this.chart.yAxes.push(new am4charts.ValueAxis());
@@ -78,14 +78,20 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     each(response.result, function (chartResult) {
       const data1 = JSON.parse(chartResult);
       const index = response.index;
+      console.log('index', index);
       data.push({ [`date${index}`]: data1.meas_time, [`value${index}`]: data1.meas_num_v, [`unit${index}`]: 'kwh', [`name${index}`]: data1.meas_name});
     });
 
-    console.log('data', data);
-
     this.range = response.setRange;
     this.index = response.index;
+    this.changeInRange = response.changeInRange;
+
     this.chart.data = data;
+
+    if (!this.changeInRange) {
+      this.addSeries();
+    }
+
   }
 
   public addAxisAndSeries(i) {
@@ -97,6 +103,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   }
 
   public getEvent(value) {
+    this.changeInRange = true;
 
     switch (value) {
       default:
@@ -112,6 +119,8 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   }
 
   public setRange(value) {
+    this.timeEvent.emit(this.changeInRange);
+
     this.selectedItem = value;
     console.log('selectedItem', this.selectedItem);
 
@@ -119,6 +128,8 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     let first;
 
     if (this.selectedItem === 'minute') {
+      this.dateAxis.groupData = true;
+      this.dateAxis.groupCount = 6 * 24 * 8;
       first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 8);
     } else if (this.selectedItem === 'hour' || this.selectedItem === 'day') {
       first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 31);
@@ -131,10 +142,12 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     const setDateRange = [];
     setDateRange.push({first: first, last: this.lastValue});
 
+    console.log('first', first);
     this.lastValue = first;
 
     this.dateRange.emit(setDateRange);
     this.rangeChangeEvent.emit(this.selectedItem);
+
 
   }
 
@@ -143,6 +156,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     let first;
 
     if (this.selectedItem === 'minute') {
+      this.dateAxis.groupCount = 6 * 24 * 7;
       first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 7);
     } else if (this.selectedItem === 'hour' || this.selectedItem === 'day') {
       first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 30);
@@ -158,8 +172,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     this.lastValue = first;
 
     this.dateRange.emit(setDateRange);
-    this.rangeChangeEvent.emit(this.selectedItem);
-
+    this.rangeChangeEvent.emit(this.selectedItem, this.changeInRange);
   }
 
   public setNextRange() {
@@ -167,7 +180,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     let first;
 
     if (this.selectedItem === 'minute') {
-
+      this.dateAxis.groupCount = 6 * 24 * 7;
       first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() + 7);
       this.lastValue = new Date(first).setDate(new Date(first).getDate() + 7);
       this.lastValue = moment(this.lastValue).format('YYYY-MM-DD');
@@ -193,7 +206,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     this.lastValue = first;
 
     this.dateRange.emit(setDateRange);
-    this.rangeChangeEvent.emit(this.selectedItem);
+    this.rangeChangeEvent.emit(this.selectedItem, this.changeInRange);
 
     console.log('this.selectedItem', this.selectedItem);
   }

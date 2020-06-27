@@ -2,7 +2,7 @@ import { AfterViewInit, Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../services/api.service';
 import { EventsService } from '../services/events.service';
-import { get, each, map, filter, merge } from 'lodash';
+import { get, each, map, filter, merge, isEmpty } from 'lodash';
 
 @Component({
   selector: 'app-root',
@@ -14,11 +14,12 @@ export class AppComponent implements AfterViewInit {
   private accessToken: any;
   public data: any;
   public first = '2019-06-01';
-  public last = '2020-06-01';
+  public last = '2019-09-01';
   public selectedItem = 'month';
   public dateRange: any[];
   public measName = [];
   public index = 0;
+  public changeInRange: boolean = false;
   public checkBoxValues = [
     {
       name: 'COUNT_KWH_HR'
@@ -42,7 +43,7 @@ export class AppComponent implements AfterViewInit {
     this.accessToken = response.result.access_token;
   }
 
-  public async getData(event, label, changeInRange) {
+  public async getData(event, label, changeInRange = true) {
 
     try {
 
@@ -53,6 +54,8 @@ export class AppComponent implements AfterViewInit {
         if (!changeInRange) {
           this.index += 1;
         }
+
+        console.log(' this.index',  this.index);
 
         this.data = await this.api.post('SolarSightWS/generic/pg/selectFrom',
           {
@@ -72,8 +75,14 @@ export class AppComponent implements AfterViewInit {
 
         this.data.setRange = [{first: '2019-06-01', last: '2019-08-07'}];
         this.data.index = this.index;
+        this.data.changeInRange = changeInRange;
+        console.log(' this.data',  this.data);
 
-        this.events.emit('asset:Data', this.data);
+        if(!isEmpty(this.data.result)) {
+          this.events.emit('asset:Data', this.data);
+        } else {
+          alert('No Data for the current range');
+        }
 
       } else {
         this.index -= 1;
@@ -85,22 +94,19 @@ export class AppComponent implements AfterViewInit {
 
   public getRangeChangeEvent(selectedItem) {
     this.selectedItem = selectedItem;
-    console.log('this.selectedItem', this.selectedItem);
 
     this.first = this.dateRange[0].first;
     this.last = this.dateRange[0].last;
 
-    const changeInRange = true;
-
-    this.getData(true, this.measName, changeInRange);
-
-    console.log('this.first', this.measName);
-    console.log('this.first', this.first);
-    console.log('this.last', this.last);
+    this.getData(true, this.measName);
   }
 
   public getDateRange(dateRange) {
     this.dateRange = dateRange;
-    console.log('this.dateRange', this.dateRange);
+  }
+
+  public getTimeEvent(changeInRange) {
+    this.changeInRange = changeInRange;
+    console.log('this.changeInRange', this.changeInRange);
   }
 }
