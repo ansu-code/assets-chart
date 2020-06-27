@@ -1,4 +1,4 @@
-import {Component, NgZone, OnDestroy, Input, Output, EventEmitter} from '@angular/core';
+import {Component, NgZone, OnDestroy, Input, Output, EventEmitter, AfterViewInit} from '@angular/core';
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import { ChartService } from '../../services/chart.service';
@@ -13,13 +13,16 @@ import {element} from "protractor";
   styleUrls: ['./assets-chart.component.scss']
 })
 
-export class AssetschartComponent implements OnDestroy {
+export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
   public isChecked = false;
   private chart: am4charts.XYChart;
   public lastValue: any;
   public selectedItem = 'month';
   public range: any;
+  public dateAxis: any;
+  public valueAxis: any;
+  public series: any;
 
   @Input() data: any[];
   @Output() dateRange: EventEmitter<any> = new EventEmitter();
@@ -27,8 +30,42 @@ export class AssetschartComponent implements OnDestroy {
 
   constructor(private zone: NgZone, private chartService: ChartService, public events: EventsService) {
     events.listen('asset:Data', async (response) => {
-      await this.getData(response);
+    //  await this.getData(response);
+      this.addSeries();
     });
+  }
+
+  public async ngAfterViewInit() {
+    this.chart = am4core.create("chartdiv", am4charts.XYChart);
+// Increase contrast by taking evey second color
+    this.chart.colors.step = 2;
+    this.chart.data = this.generateChartData();
+    this.chart.legend = new am4charts.Legend();
+    this.chart.cursor = new am4charts.XYCursor();
+  }
+  public createAxisAndSeries(field, name, opposite, bullet) {
+    console.log('adding '+name);
+
+    this.dateAxis = this.chart.xAxes.push(new am4charts.DateAxis());
+    this.dateAxis.renderer.minGridDistance = 50;
+    this.valueAxis = this.chart.yAxes.push(new am4charts.ValueAxis());
+
+    this.series = this.chart.series.push(new am4charts.LineSeries());
+    this.series.dataFields.valueY = field;
+    this.series.dataFields.dateX = "date";
+    this.series.strokeWidth = 2;
+    this.series.yAxis = this.valueAxis;
+    this.series.xAxis = this.dateAxis;
+    this.series.name = name;
+    this.series.tooltipText = "{name}: [bold]{valueY}[/]";
+    this.series.tensionX = 0.8;
+
+    let interfaceColors = new am4core.InterfaceColorSet();
+    if (this.chart.className) {
+      console.log('The chart object exists and is a ' + this.chart.className + ' chart');
+    } else {
+      console.error('No wonder it does not work, the chart object does not exist');
+    }
   }
 
   public async getData(response) {
@@ -41,59 +78,46 @@ export class AssetschartComponent implements OnDestroy {
       console.log('data', data);
     });
 
-    this.data = Object.values(data.reduce((setData, { name, value, date, unit }) => {
-      setData[name] = setData[name] || { data: [] };
-      setData[name].data.push({ value, date, unit, name });
-      return setData;
-    }, {}));
+    /* this.data = Object.values(data.reduce((setData, { name, value, date, unit }) => {
+       setData[name] = setData[name] || { data: [] };
+       setData[name].data.push({ value, date, unit, name });
+       return setData;
+     }, {}));*/
 
     this.range = response.setRange;
-
-    await this.createChart(this.data);
-
-  }
-
-  public async createChart(data) {
-
-    // Create Chart
-    let chart = am4core.create("chartdiv", am4charts.XYChart);
-    chart.paddingRight = 40;
-
-    each(data, function (element1) {
-
-      chart.data = element1.data;
-
-      console.log('element', chart.data);
-
-      let dateAxis = chart.xAxes.push(new am4charts.DateAxis());
-      dateAxis.renderer.grid.template.location = 0;
-      dateAxis.renderer.labels.template.fill = am4core.color("#e59165");
-      dateAxis.groupData = true;
-      dateAxis.renderer.grid.template.strokeOpacity = 0.07;
-
-      let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-      valueAxis.tooltip.disabled = true;
-      valueAxis.renderer.labels.template.fill = am4core.color("#e59165");
-      valueAxis.renderer.minWidth = 60;
-      valueAxis.renderer.grid.template.strokeOpacity = 0.07;
-
-      const series = chart.series.push(new am4charts.LineSeries());
-
-      series.name = 'name';
-      series.dataFields.dateX = "date";
-      series.dataFields.valueY = "value";
-      series.yAxis = valueAxis;
-      series.xAxis = dateAxis;
-      series.tooltipText = "{valueY.value} {unit}";
-      series.fill = am4core.color("#e59165");
-      series.stroke = am4core.color("#e59165");
-
-    });
-
-    chart.exporting.menu = new am4core.ExportMenu();
+    this.chart.data = data;
 
   }
 
+  // generate some random data, quite different range
+  public generateChartData() {
+    const chartData = [
+      {date: '2019-02-05T10:00:01+00:00', value: 1602, value1: 1893},
+      {date: '2019-04-05T10:00:01+00:00', value: 2602, value1: 2893},
+      {date: '2019-05-05T10:00:01+00:00', value: 3602, value1: 3893},
+      {date: '2019-07-05T10:00:01+00:00', value: 4602, value1: 4893},
+      {date: '2019-08-05T10:00:01+00:00', value: 5602, value1: 5893},
+      {date: '2019-09-05T10:00:01+00:00', value: 7602, value1: 6893},
+      {date: '2019-10-05T10:00:01+00:00', value: 9602, value1: 7893},
+      {date: '2019-12-05T10:00:01+00:00', value: 11602, value1: 9893},
+    ];
+
+    console.log('chartData', chartData);
+
+    return chartData;
+  }
+
+  public addAxisAndSeries(name) {
+    if (name==="Visits") {
+      this.createAxisAndSeries("value", "Value", false, "circle");
+    } else if (name==="Views") {
+      this.createAxisAndSeries("value1", "Value1", true, "triangle");
+    }
+  }
+  public addSeries() {
+    this.addAxisAndSeries("Visits");
+    this.addAxisAndSeries("Views");
+  }
 
   public getEvent(value) {
 
@@ -111,29 +135,29 @@ export class AssetschartComponent implements OnDestroy {
   }
 
   public setRange(value) {
-      this.selectedItem = value;
-      console.log('selectedItem', this.selectedItem);
+    this.selectedItem = value;
+    console.log('selectedItem', this.selectedItem);
 
-      this.lastValue = this.range[0].first;
-      let first;
+    this.lastValue = this.range[0].first;
+    let first;
 
-      if (this.selectedItem === 'minute') {
-        first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 8);
-      } else if (this.selectedItem === 'hour' || this.selectedItem === 'day') {
-        first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 31);
-      } else {
-        first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 365);
-      }
+    if (this.selectedItem === 'minute') {
+      first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 8);
+    } else if (this.selectedItem === 'hour' || this.selectedItem === 'day') {
+      first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 31);
+    } else {
+      first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 365);
+    }
 
-      first = moment(first).format('YYYY-MM-DD');
+    first = moment(first).format('YYYY-MM-DD');
 
-      const setDateRange = [];
-      setDateRange.push({first: first, last: this.lastValue});
+    const setDateRange = [];
+    setDateRange.push({first: first, last: this.lastValue});
 
-      this.lastValue = first;
+    this.lastValue = first;
 
-      this.dateRange.emit(setDateRange);
-      this.rangeChangeEvent.emit(this.selectedItem);
+    this.dateRange.emit(setDateRange);
+    this.rangeChangeEvent.emit(this.selectedItem);
 
   }
 
