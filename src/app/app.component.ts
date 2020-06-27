@@ -18,6 +18,7 @@ export class AppComponent implements AfterViewInit {
   public selectedItem = 'month';
   public dateRange: any[];
   public measName = [];
+  public index = 0;
 
   constructor(private http: HttpClient, private api: ApiService, public events: EventsService) {
   }
@@ -36,7 +37,17 @@ export class AppComponent implements AfterViewInit {
   public async getData(event, label) {
 
     try {
+
+      console.log('Guillllllllll');
+
       if (event) {
+
+        this.index += 1;
+
+        console.log('index', this.index);
+
+        // const index1 = event === true ? this.index + 1 : this.index;
+
         this.measName.push(label);
         console.log('this.last', this.last);
 
@@ -48,7 +59,7 @@ export class AppComponent implements AfterViewInit {
             "cols": ["site_ref_key", "asset_ref_key", "meas_name", "meas_date"],
             "andConditions": [
               {"col": "asset_ref_key", "operator": "IN", "values": ["TEPSOL_SITE_001_110101"]},
-              {"col": "meas_name", "operator": "IN", "values": this.measName},
+              {"col": "meas_name", "operator": "IN", "values": [label]},
               {"col": "meas_date", "operator": ">=", "value": this.first},
               {"col": "meas_date", "operator": "<=", "value": this.last}
             ],
@@ -57,9 +68,12 @@ export class AppComponent implements AfterViewInit {
           }, this.accessToken);
 
         this.data.setRange = [{first: '2019-06-01', last: '2019-08-07'}];
+        this.data.index = this.index;
 
         this.events.emit('asset:Data', this.data);
 
+      } else {
+        this.index -= 1;
       }
     } catch (error) {
       console.log('Error getting response', error);

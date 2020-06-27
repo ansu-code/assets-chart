@@ -4,8 +4,9 @@ import * as am4charts from "@amcharts/amcharts4/charts";
 import { ChartService } from '../../services/chart.service';
 import { EventsService } from '../../services/events.service';
 import * as moment from 'moment';
-import { isEmpty, each, map, chain, unionBy, flatten, uniq} from 'lodash';
-import {element} from "protractor";
+import { isEmpty, each, map, chain, unionBy, flatten, uniq, concat, mergeWith} from 'lodash';
+
+const data = [];
 
 @Component({
   selector: 'app-assets-chart',
@@ -23,6 +24,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   public dateAxis: any;
   public valueAxis: any;
   public series: any;
+  public index: any;
 
   @Input() data: any[];
   @Output() dateRange: EventEmitter<any> = new EventEmitter();
@@ -30,7 +32,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
   constructor(private zone: NgZone, private chartService: ChartService, public events: EventsService) {
     events.listen('asset:Data', async (response) => {
-    //  await this.getData(response);
+      await this.getData(response);
       this.addSeries();
     });
   }
@@ -39,12 +41,13 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     this.chart = am4core.create("chartdiv", am4charts.XYChart);
 // Increase contrast by taking evey second color
     this.chart.colors.step = 2;
-    this.chart.data = this.generateChartData();
     this.chart.legend = new am4charts.Legend();
     this.chart.cursor = new am4charts.XYCursor();
   }
-  public createAxisAndSeries(field, name, opposite, bullet) {
+
+  public createAxisAndSeries(field, name) {
     console.log('adding '+name);
+    console.log('field', field);
 
     this.dateAxis = this.chart.xAxes.push(new am4charts.DateAxis());
     this.dateAxis.renderer.minGridDistance = 50;
@@ -52,7 +55,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
     this.series = this.chart.series.push(new am4charts.LineSeries());
     this.series.dataFields.valueY = field;
-    this.series.dataFields.dateX = "date";
+    this.series.dataFields.dateX = "date1";
     this.series.strokeWidth = 2;
     this.series.yAxis = this.valueAxis;
     this.series.xAxis = this.dateAxis;
@@ -70,53 +73,32 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
   public async getData(response) {
 
-    let data = [];
-
     each(response.result, function (chartResult) {
       const data1 = JSON.parse(chartResult);
-      data.push({ date: data1.meas_time, value: data1.meas_num_v, unit: 'kwh', name: data1.meas_name});
-      console.log('data', data);
+      const index = response.index;
+      data.push({ [`date${index}`]: data1.meas_time, [`value${index}`]: data1.meas_num_v, [`unit${index}`]: 'kwh', [`name${index}`]: data1.meas_name});
     });
 
-    /* this.data = Object.values(data.reduce((setData, { name, value, date, unit }) => {
-       setData[name] = setData[name] || { data: [] };
-       setData[name].data.push({ value, date, unit, name });
-       return setData;
-     }, {}));*/
-
     this.range = response.setRange;
+    this.index = response.index;
     this.chart.data = data;
-
   }
 
-  // generate some random data, quite different range
-  public generateChartData() {
-    const chartData = [
-      {date: '2019-02-05T10:00:01+00:00', value: 1602, value1: 1893},
-      {date: '2019-04-05T10:00:01+00:00', value: 2602, value1: 2893},
-      {date: '2019-05-05T10:00:01+00:00', value: 3602, value1: 3893},
-      {date: '2019-07-05T10:00:01+00:00', value: 4602, value1: 4893},
-      {date: '2019-08-05T10:00:01+00:00', value: 5602, value1: 5893},
-      {date: '2019-09-05T10:00:01+00:00', value: 7602, value1: 6893},
-      {date: '2019-10-05T10:00:01+00:00', value: 9602, value1: 7893},
-      {date: '2019-12-05T10:00:01+00:00', value: 11602, value1: 9893},
-    ];
+  public addAxisAndSeries(i) {
 
-    console.log('chartData', chartData);
+    console.log('i', i);
 
-    return chartData;
+    const value = [`value${i}`];
+    console.log('value', value);
+
+    this.createAxisAndSeries(value, [`Value${i}`], false, "circle");
   }
 
-  public addAxisAndSeries(name) {
-    if (name==="Visits") {
-      this.createAxisAndSeries("value", "Value", false, "circle");
-    } else if (name==="Views") {
-      this.createAxisAndSeries("value1", "Value1", true, "triangle");
-    }
-  }
   public addSeries() {
-    this.addAxisAndSeries("Visits");
-    this.addAxisAndSeries("Views");
+
+    for (let i = 0; i < this.index; i++) {
+      this.addAxisAndSeries(this.index);
+    }
   }
 
   public getEvent(value) {
