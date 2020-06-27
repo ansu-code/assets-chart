@@ -38,18 +38,11 @@ export class AppComponent implements AfterViewInit {
 
     try {
 
-      console.log('Guillllllllll');
-
       if (event) {
 
         this.index += 1;
-
-        console.log('index', this.index);
-
-        // const index1 = event === true ? this.index + 1 : this.index;
-
-        this.measName.push(label);
-        console.log('this.last', this.last);
+        
+        this.measName = label;
 
         this.data = await this.api.post('SolarSightWS/generic/pg/selectFrom',
           {
@@ -59,7 +52,7 @@ export class AppComponent implements AfterViewInit {
             "cols": ["site_ref_key", "asset_ref_key", "meas_name", "meas_date"],
             "andConditions": [
               {"col": "asset_ref_key", "operator": "IN", "values": ["TEPSOL_SITE_001_110101"]},
-              {"col": "meas_name", "operator": "IN", "values": [label]},
+              {"col": "meas_name", "operator": "IN", "values": [this.measName]},
               {"col": "meas_date", "operator": ">=", "value": this.first},
               {"col": "meas_date", "operator": "<=", "value": this.last}
             ],

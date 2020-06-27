@@ -39,15 +39,12 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
   public async ngAfterViewInit() {
     this.chart = am4core.create("chartdiv", am4charts.XYChart);
-// Increase contrast by taking evey second color
     this.chart.colors.step = 2;
     this.chart.legend = new am4charts.Legend();
     this.chart.cursor = new am4charts.XYCursor();
   }
 
-  public createAxisAndSeries(field, name) {
-    console.log('adding '+name);
-    console.log('field', field);
+  public createAxisAndSeries(date, field, name) {
 
     this.dateAxis = this.chart.xAxes.push(new am4charts.DateAxis());
     this.dateAxis.renderer.minGridDistance = 50;
@@ -55,20 +52,13 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
     this.series = this.chart.series.push(new am4charts.LineSeries());
     this.series.dataFields.valueY = field;
-    this.series.dataFields.dateX = "date1";
+    this.series.dataFields.dateX = date;
     this.series.strokeWidth = 2;
     this.series.yAxis = this.valueAxis;
     this.series.xAxis = this.dateAxis;
     this.series.name = name;
     this.series.tooltipText = "{name}: [bold]{valueY}[/]";
     this.series.tensionX = 0.8;
-
-    let interfaceColors = new am4core.InterfaceColorSet();
-    if (this.chart.className) {
-      console.log('The chart object exists and is a ' + this.chart.className + ' chart');
-    } else {
-      console.error('No wonder it does not work, the chart object does not exist');
-    }
   }
 
   public async getData(response) {
@@ -85,20 +75,11 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   }
 
   public addAxisAndSeries(i) {
-
-    console.log('i', i);
-
-    const value = [`value${i}`];
-    console.log('value', value);
-
-    this.createAxisAndSeries(value, [`Value${i}`], false, "circle");
+    this.createAxisAndSeries([`date${i}`], [`value${i}`], [`Value${i}`]);
   }
 
   public addSeries() {
-
-    for (let i = 0; i < this.index; i++) {
       this.addAxisAndSeries(this.index);
-    }
   }
 
   public getEvent(value) {
