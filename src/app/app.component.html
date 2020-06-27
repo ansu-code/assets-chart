@@ -33,12 +33,8 @@
 </nav>
 
 <div>
-  <label>
-    <input type="checkbox" ngModel (ngModelChange)="getData($event , 'COUNT_KWH_HR')"> COUNT_KWH_HR
-  </label>
-
-  <label>
-    <input type="checkbox" ngModel (ngModelChange)="getData($event , 'AC_VOL_YB')"> AC_VOL_YB
+  <label *ngFor="let value of checkBoxValues">
+    <input type="checkbox" ngModel (ngModelChange)="getData($event , value.name, false)"> {{value.name}}
   </label>
 </div>
 

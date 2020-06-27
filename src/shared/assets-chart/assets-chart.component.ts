@@ -69,6 +69,8 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
       data.push({ [`date${index}`]: data1.meas_time, [`value${index}`]: data1.meas_num_v, [`unit${index}`]: 'kwh', [`name${index}`]: data1.meas_name});
     });
 
+    console.log('data', data);
+
     this.range = response.setRange;
     this.index = response.index;
     this.chart.data = data;

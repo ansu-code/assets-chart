@@ -14,11 +14,19 @@ export class AppComponent implements AfterViewInit {
   private accessToken: any;
   public data: any;
   public first = '2019-06-01';
-  public last = '2019-8-07';
+  public last = '2020-8-01';
   public selectedItem = 'month';
   public dateRange: any[];
   public measName = [];
   public index = 0;
+  public checkBoxValues = [
+    {
+      name: 'COUNT_KWH_HR'
+    },
+    {
+      name: 'AC_VOL_YB'
+    }
+  ];
 
   constructor(private http: HttpClient, private api: ApiService, public events: EventsService) {
   }
@@ -34,15 +42,17 @@ export class AppComponent implements AfterViewInit {
     this.accessToken = response.result.access_token;
   }
 
-  public async getData(event, label) {
+  public async getData(event, label, changeInRange) {
 
     try {
 
       if (event) {
 
-        this.index += 1;
-        
         this.measName = label;
+
+        if (!changeInRange) {
+          this.index += 1;
+        }
 
         this.data = await this.api.post('SolarSightWS/generic/pg/selectFrom',
           {
@@ -79,7 +89,10 @@ export class AppComponent implements AfterViewInit {
 
     this.first = this.dateRange[0].first;
     this.last = this.dateRange[0].last;
-    this.getData(true, this.measName);
+
+    const changeInRange = true;
+
+    this.getData(true, this.measName, changeInRange);
 
     console.log('this.first', this.measName);
     console.log('this.first', this.first);
