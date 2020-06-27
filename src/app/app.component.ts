@@ -4,6 +4,8 @@ import { ApiService } from '../services/api.service';
 import { EventsService } from '../services/events.service';
 import { get, each, map, filter, merge, isEmpty } from 'lodash';
 
+let checked = false;
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -52,10 +54,12 @@ export class AppComponent implements AfterViewInit {
         this.measName = label;
 
         if (!changeInRange) {
-          this.index += 1;
+          checked = true;
         }
 
-        console.log(' this.index',  this.index);
+        const setRange = this.dateRange ? this.dateRange : [{first: this.first, last: this.last}];
+
+        console.log(' setRange',  setRange);
 
         this.data = await this.api.post('SolarSightWS/generic/pg/selectFrom',
           {
@@ -73,10 +77,11 @@ export class AppComponent implements AfterViewInit {
             "orderType": "ASC"
           }, this.accessToken);
 
-        this.data.setRange = [{first: '2019-06-01', last: '2019-08-07'}];
-        this.data.index = this.index;
+        this.data.setRange = setRange;
         this.data.measName = this.measName;
+        this.data.checked = checked;
         this.data.changeInRange = changeInRange;
+
         console.log(' this.data',  this.data);
 
         if(!isEmpty(this.data.result)) {
@@ -85,9 +90,9 @@ export class AppComponent implements AfterViewInit {
           alert('No Data for the current range');
         }
 
-      } else {
+      } /*else {
         this.index -= 1;
-      }
+      }*/
     } catch (error) {
       console.log('Error getting response', error);
     }
@@ -95,10 +100,6 @@ export class AppComponent implements AfterViewInit {
 
   public getRangeChangeEvent(selectedItem) {
     this.selectedItem = selectedItem;
-
-    this.first = this.dateRange[0].first;
-    this.last = this.dateRange[0].last;
-
     this.getData(true, this.measName);
   }
 

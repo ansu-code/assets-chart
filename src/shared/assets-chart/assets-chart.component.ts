@@ -7,6 +7,7 @@ import * as moment from 'moment';
 import { isEmpty, each, map, chain, unionBy, flatten, uniq, concat, mergeWith} from 'lodash';
 
 const data = [];
+let index = 0;
 
 @Component({
   selector: 'app-assets-chart',
@@ -76,19 +77,24 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
   public async getData(response) {
 
+    if (response.checked) {
+      index += 1;
+    }
+
     each(response.result, function (chartResult) {
       const data1 = JSON.parse(chartResult);
-      const index = response.index;
       console.log('index', index);
       data.push({ [`date${index}`]: data1.meas_time, [`value${index}`]: data1.meas_num_v, [`unit${index}`]: 'kwh', [`name${index}`]: data1.meas_name});
     });
 
-    this.range = response.setRange;
-    this.index = response.index;
+    this.range = this.dateRange;
+    this.index = index;
     this.changeInRange = response.changeInRange;
     this.measName = response.measName;
 
     this.chart.data = data;
+
+    console.log('chartdata', this.chart.data);
 
     if (!this.changeInRange) {
       this.addSeries();
@@ -124,18 +130,23 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     this.timeEvent.emit(this.changeInRange);
 
     this.selectedItem = value;
-    console.log('selectedItem', this.selectedItem);
-
     this.lastValue = this.range[0].first;
     let first;
 
     if (this.selectedItem === 'minute') {
-      this.dateAxis.groupData = true;
-      this.dateAxis.groupCount = 6 * 24 * 8;
+      this.dateAxis.groupCount = 60 * 24 * 8;
       first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 8);
-    } else if (this.selectedItem === 'hour' || this.selectedItem === 'day') {
+
+    } else if (this.selectedItem === 'hour') {
+      this.dateAxis.groupCount = 24 * 31;
       first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 31);
+
+    } else if (this.selectedItem === 'day') {
+      this.dateAxis.groupCount = 31;
+      first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 31);
+
     } else {
+      this.dateAxis.groupCount = 13;
       first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 365);
     }
 
@@ -158,11 +169,16 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     let first;
 
     if (this.selectedItem === 'minute') {
-      this.dateAxis.groupCount = 6 * 24 * 7;
+      this.dateAxis.groupCount = 60 * 24 * 7;
       first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 7);
-    } else if (this.selectedItem === 'hour' || this.selectedItem === 'day') {
+    } else if (this.selectedItem === 'hour') {
+      this.dateAxis.groupCount = 24 * 30;
+      first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 30);
+    } else if (this.selectedItem === 'day') {
+      this.dateAxis.groupCount = 30;
       first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 30);
     } else {
+      this.dateAxis.groupCount = 13;
       first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 365);
     }
 
