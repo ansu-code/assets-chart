@@ -55,7 +55,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
   }
 
-  public createAxisAndSeries(date, field, name, response) {
+  public createAxisAndSeries(date, field, name) {
 
     // Create axes and series
 
@@ -121,18 +121,18 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
       // Set chart Data
       this.chart.data = sortedData;
-      this.addSeries(response);
+      this.addSeries();
     }
 
   }
 
-  public addAxisAndSeries(i, response) {
+  public addAxisAndSeries(i) {
     // Create axes and series
-    this.createAxisAndSeries([`date${i}`], [`value${i}`], label, response);
+    this.createAxisAndSeries([`date${i}`], [`value${i}`], label);
   }
 
-  public addSeries(response) {
-    this.addAxisAndSeries(this.index, response);
+  public addSeries() {
+    this.addAxisAndSeries(this.index);
   }
 
   public getEvent(value) {
