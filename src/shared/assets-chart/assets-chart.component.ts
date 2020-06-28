@@ -4,7 +4,7 @@ import * as am4charts from "@amcharts/amcharts4/charts";
 import { ChartService } from '../../services/chart.service';
 import { EventsService } from '../../services/events.service';
 import * as moment from 'moment';
-import { each } from 'lodash';
+import { each , orderBy } from 'lodash';
 
 const data = [];
 let index = 0;
@@ -41,6 +41,9 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   }
 
   public async ngAfterViewInit() {
+
+    // Create Chart
+
     this.chart = am4core.create("chartdiv", am4charts.XYChart);
     let scrollbarX = new am4charts.XYChartScrollbar();
 
@@ -55,6 +58,8 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
   public createAxisAndSeries(date, field, name) {
 
+    // Create axes and series
+
     this.dateAxis = this.chart.xAxes.push(new am4charts.DateAxis());
     this.dateAxis.renderer.minGridDistance = 50;
     this.dateAxis.renderer.grid.template.location = 0;
@@ -63,6 +68,8 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     this.valueAxis = this.chart.yAxes.push(new am4charts.ValueAxis());
     this.valueAxis.renderer.minWidth = 60;
     this.valueAxis.renderer.grid.template.strokeOpacity = 0.07;
+
+    // Create series
 
     this.series = this.chart.series.push(new am4charts.LineSeries());
     this.series.dataFields.valueY = field;
@@ -82,6 +89,8 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
       index += 1;
     }
 
+    // Response from API
+
     each(response.result, function (chartResult) {
       const data1 = JSON.parse(chartResult);
       console.log('index', index);
@@ -89,9 +98,14 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
       data.push({ [`date${index}`]: data1.meas_time, [`value${index}`]: data1.meas_num_v, [`unit${index}`]: 'kwh', [`name${index}`]: data1.meas_name});
     });
 
+    // sort array by date asc
+    const sortedData = orderBy(data, [`date${index}`], 'asc');
+
     this.range = response.setRange;
     this.index = index;
-    this.chart.data = data;
+
+    // Set chart Data
+    this.chart.data = sortedData;
 
     if (!this.changeInRange) {
       this.addSeries();
@@ -100,6 +114,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   }
 
   public addAxisAndSeries(i) {
+    // Create axes and series
     this.createAxisAndSeries([`date${i}`], [`value${i}`], measName);
   }
 
