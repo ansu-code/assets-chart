@@ -4,7 +4,7 @@ import * as am4charts from "@amcharts/amcharts4/charts";
 import { ChartService } from '../../services/chart.service';
 import { EventsService } from '../../services/events.service';
 import * as moment from 'moment';
-import { isEmpty, each, map, chain, unionBy, flatten, uniq, concat, mergeWith} from 'lodash';
+import { each } from 'lodash';
 
 const data = [];
 let index = 0;
@@ -77,8 +77,6 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
   public async getData(response) {
 
-    console.log('response.checked', response.checked);
-
     if (response.checked) {
       this.changeInRange = false;
       index += 1;
@@ -93,9 +91,6 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
     this.range = response.setRange;
     this.index = index;
-
-    console.log('changeInRange assets', this.changeInRange);
-
     this.chart.data = data;
 
     if (!this.changeInRange) {
@@ -129,14 +124,12 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   }
 
   public setRange(value) {
-    this.changeInRange = true;
 
     this.selectedItem = value;
-
-    console.log('setRange', this.range);
-
     this.lastValue = this.range[0].first;
+
     let first;
+    const setDateRange = [];
 
     if (this.selectedItem === 'minute') {
       this.dateAxis.groupCount = 60 * 24 * 8;
@@ -152,13 +145,9 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     }
 
     first = moment(first).format('YYYY-MM-DD');
-
-    const setDateRange = [];
     setDateRange.push({first: first, last: this.lastValue});
 
-    console.log('first', first);
     this.lastValue = first;
-
     this.dateRange.emit(setDateRange);
     this.rangeChangeEvent.emit(this.selectedItem);
 
@@ -166,10 +155,11 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   }
 
   public setPreviousRange() {
-    this.changeInRange = true;
 
     this.lastValue = this.range[0].first;
+
     let first;
+    const setDateRange = [];
 
     if (this.selectedItem === 'minute') {
       this.dateAxis.groupCount = 60 * 24 * 7;
@@ -183,29 +173,29 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     }
 
     first = moment(first).format('YYYY-MM-DD');
-
-    const setDateRange = [];
     setDateRange.push({first: first, last: this.lastValue});
 
     this.lastValue = first;
-
     this.dateRange.emit(setDateRange);
     this.rangeChangeEvent.emit(this.selectedItem);
   }
 
   public setNextRange() {
-    this.changeInRange = true;
 
     this.lastValue = this.range[0].first;
+
     let first;
+    const setDateRange = [];
 
     if (this.selectedItem === 'minute') {
+
       this.dateAxis.groupCount = 6 * 24 * 7;
       first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() + 7);
       this.lastValue = new Date(first).setDate(new Date(first).getDate() + 7);
       this.lastValue = moment(this.lastValue).format('YYYY-MM-DD');
 
     } else if (this.selectedItem === 'hour' || this.selectedItem === 'day') {
+
       this.dateAxis.groupCount = this.selectedItem === 'hour' ? 24 * 30 : 30;
       first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() + 30);
       this.lastValue = new Date(first).setDate(new Date(first).getDate() + 30);
@@ -213,22 +203,19 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
     } else {
 
+      this.dateAxis.groupCount = 13;
       first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() + 365);
       this.lastValue = new Date(first).setDate(new Date(first).getDate() + 365);
       this.lastValue = moment(this.lastValue).format('YYYY-MM-DD');
     }
 
     first = moment(first).format('YYYY-MM-DD');
-
-    const setDateRange = [];
     setDateRange.push({first: first, last: this.lastValue});
 
     this.lastValue = first;
-
     this.dateRange.emit(setDateRange);
     this.rangeChangeEvent.emit(this.selectedItem);
 
-    console.log('this.selectedItem', this.selectedItem);
   }
 
   public ngOnDestroy() {

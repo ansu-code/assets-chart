@@ -2,7 +2,7 @@ import { AfterViewInit, Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../services/api.service';
 import { EventsService } from '../services/events.service';
-import { get, each, map, filter, merge, isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 
 let checked = false;
 
@@ -20,7 +20,6 @@ export class AppComponent implements AfterViewInit {
   public selectedItem = 'month';
   public dateRange: any[];
   public measName = [];
-  public changeInRange: boolean = false;
   public checkBoxValues = [
     {
       name: 'COUNT_KWH_HR'
