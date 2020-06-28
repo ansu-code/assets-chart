@@ -1,7 +1,6 @@
-import {Component, NgZone, OnDestroy, Input, Output, EventEmitter, AfterViewInit} from '@angular/core';
+import { Component, NgZone, OnDestroy, Input, Output, EventEmitter, AfterViewInit} from '@angular/core';
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
-import { ChartService } from '../../services/chart.service';
 import { EventsService } from '../../services/events.service';
 import * as moment from 'moment';
 import { each , orderBy } from 'lodash';
@@ -60,24 +59,28 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
     // Create axes and series
 
-    this.dateAxis = this.chart.xAxes.push(new am4charts.DateAxis());
+    if (!this.changeInRange) {
+      this.dateAxis = this.chart.xAxes.push(new am4charts.DateAxis());
+      this.valueAxis = this.chart.yAxes.push(new am4charts.ValueAxis());
+      this.series = this.chart.series.push(new am4charts.LineSeries());
+      this.series.name = name;
+    }
     this.dateAxis.renderer.minGridDistance = 50;
     this.dateAxis.renderer.grid.template.location = 0;
     this.dateAxis.renderer.grid.template.strokeOpacity = 0.07;
+    this.dateAxis.groupCount = true;
 
-    this.valueAxis = this.chart.yAxes.push(new am4charts.ValueAxis());
+
     this.valueAxis.renderer.minWidth = 60;
     this.valueAxis.renderer.grid.template.strokeOpacity = 0.07;
 
     // Create series
 
-    this.series = this.chart.series.push(new am4charts.LineSeries());
     this.series.dataFields.valueY = field;
     this.series.dataFields.dateX = date;
     this.series.strokeWidth = 2;
     this.series.yAxis = this.valueAxis;
     this.series.xAxis = this.dateAxis;
-    this.series.name = name;
     this.series.tooltipText = "{name}: [bold]{valueY}[/]";
     this.series.tensionX = 0.8;
   }
@@ -93,7 +96,6 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
     each(response.result, function (chartResult) {
       const data1 = JSON.parse(chartResult);
-      console.log('index', index);
       measName = data1.meas_name;
       data.push({ [`date${index}`]: data1.meas_time, [`value${index}`]: data1.meas_num_v, [`unit${index}`]: 'kwh', [`name${index}`]: data1.meas_name});
     });
@@ -151,7 +153,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
       first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 8);
 
     } else if (this.selectedItem === 'hour' || this.selectedItem === 'day') {
-      this.dateAxis.groupCount = this.selectedItem === 'hour' ? 24 * 31 : 30;
+      this.dateAxis.groupCount = this.selectedItem === 'hour' ? 24 * 31 : 31;
       first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 31);
 
     } else {
@@ -162,10 +164,16 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     first = moment(first).format('YYYY-MM-DD');
     setDateRange.push({first: first, last: this.lastValue});
 
+    // Zoom Chart according to the range
+
+    this.dateAxis.zoomToDates(first, this.lastValue);
+    this.addSeries();
+
+    this.chart.cursor.xAxis = this.dateAxis;
+
     this.lastValue = first;
     this.dateRange.emit(setDateRange);
     this.rangeChangeEvent.emit(this.selectedItem);
-
 
   }
 

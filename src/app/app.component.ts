@@ -16,7 +16,7 @@ export class AppComponent implements AfterViewInit {
   private accessToken: any;
   public data: any;
   public first = '2019-06-01';
-  public last = '2019-09-01';
+  public last = '2020-06-01';
   public selectedItem = 'month';
   public dateRange: any[];
   public measName = [];
@@ -65,8 +65,8 @@ export class AppComponent implements AfterViewInit {
             "andConditions": [
               {"col": "asset_ref_key", "operator": "IN", "values": ["TEPSOL_SITE_001_110101"]},
               {"col": "meas_name", "operator": "IN", "values": [this.measName]},
-              {"col": "meas_date", "operator": ">=", "value": this.first},
-              {"col": "meas_date", "operator": "<=", "value": this.last}
+              {"col": "meas_date", "operator": ">=", "value": setRange[0].first},
+              {"col": "meas_date", "operator": "<=", "value": setRange[0].last}
             ],
             "orderBy": "meas_date",
             "orderType": "ASC"
