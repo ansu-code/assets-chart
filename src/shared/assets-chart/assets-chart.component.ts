@@ -8,6 +8,7 @@ import { isEmpty, each, map, chain, unionBy, flatten, uniq, concat, mergeWith} f
 
 const data = [];
 let index = 0;
+let measName = '';
 
 @Component({
   selector: 'app-assets-chart',
@@ -26,7 +27,6 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   public valueAxis: any;
   public series: any;
   public index: any;
-  public measName: any;
   public changeInRange = false;
 
   @Input() data: any[];
@@ -77,24 +77,26 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
   public async getData(response) {
 
+    console.log('response.checked', response.checked);
+
     if (response.checked) {
+      this.changeInRange = false;
       index += 1;
     }
 
     each(response.result, function (chartResult) {
       const data1 = JSON.parse(chartResult);
       console.log('index', index);
+      measName = data1.meas_name;
       data.push({ [`date${index}`]: data1.meas_time, [`value${index}`]: data1.meas_num_v, [`unit${index}`]: 'kwh', [`name${index}`]: data1.meas_name});
     });
 
     this.range = response.setRange;
     this.index = index;
-    this.changeInRange = response.changeInRange;
-    this.measName = response.measName;
+
+    console.log('changeInRange assets', this.changeInRange);
 
     this.chart.data = data;
-
-    console.log('chartdata', this.chart.data);
 
     if (!this.changeInRange) {
       this.addSeries();
@@ -103,7 +105,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   }
 
   public addAxisAndSeries(i) {
-    this.createAxisAndSeries([`date${i}`], [`value${i}`], this.measName);
+    this.createAxisAndSeries([`date${i}`], [`value${i}`], measName);
   }
 
   public addSeries() {
@@ -127,7 +129,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   }
 
   public setRange(value) {
-    this.timeEvent.emit(this.changeInRange);
+    this.changeInRange = true;
 
     this.selectedItem = value;
 
@@ -164,8 +166,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   }
 
   public setPreviousRange() {
-
-    this.timeEvent.emit(this.changeInRange);
+    this.changeInRange = true;
 
     this.lastValue = this.range[0].first;
     let first;
@@ -193,7 +194,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   }
 
   public setNextRange() {
-    this.timeEvent.emit(this.changeInRange);
+    this.changeInRange = true;
 
     this.lastValue = this.range[0].first;
     let first;

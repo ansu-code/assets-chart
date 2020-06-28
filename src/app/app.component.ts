@@ -20,7 +20,6 @@ export class AppComponent implements AfterViewInit {
   public selectedItem = 'month';
   public dateRange: any[];
   public measName = [];
-  public index = 0;
   public changeInRange: boolean = false;
   public checkBoxValues = [
     {
@@ -51,15 +50,12 @@ export class AppComponent implements AfterViewInit {
 
       if (event) {
 
-        this.measName = label;
-
         if (!changeInRange) {
           checked = true;
         }
 
         const setRange = this.dateRange ? this.dateRange : [{first: this.first, last: this.last}];
-
-        console.log(' setRange',  setRange);
+        this.measName = label;
 
         this.data = await this.api.post('SolarSightWS/generic/pg/selectFrom',
           {
@@ -78,21 +74,14 @@ export class AppComponent implements AfterViewInit {
           }, this.accessToken);
 
         this.data.setRange = setRange;
-        this.data.measName = this.measName;
         this.data.checked = checked;
-        this.data.changeInRange = changeInRange;
-
-        console.log(' this.data',  this.data);
 
         if(!isEmpty(this.data.result)) {
           this.events.emit('asset:Data', this.data);
         } else {
           alert('No Data for the current range');
         }
-
-      } /*else {
-        this.index -= 1;
-      }*/
+      }
     } catch (error) {
       console.log('Error getting response', error);
     }
@@ -101,14 +90,11 @@ export class AppComponent implements AfterViewInit {
   public getRangeChangeEvent(selectedItem) {
     this.selectedItem = selectedItem;
     this.getData(true, this.measName);
+    checked = false;
   }
 
   public getDateRange(dateRange) {
     this.dateRange = dateRange;
   }
 
-  public getTimeEvent(changeInRange) {
-    this.changeInRange = changeInRange;
-    console.log('this.changeInRange', this.changeInRange);
-  }
 }
