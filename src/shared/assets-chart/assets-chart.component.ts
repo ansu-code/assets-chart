@@ -3,7 +3,7 @@ import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import { EventsService } from '../../services/events.service';
 import * as moment from 'moment';
-import { each , orderBy, findIndex } from 'lodash';
+import { each , orderBy, findIndex, isEmpty } from 'lodash';
 
 let data = [];
 let index = 0;
@@ -98,25 +98,26 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
         data.push({ [`date${index}`]: data1.meas_time, [`value${index}`]: data1.meas_num_v, [`unit${index}`]: 'kwh', [`name${index}`]: data1.meas_name});
       });
 
+      console.log('checked', data);
+
       this.range = response.setRange;
       this.index = index;
       label = response.label;
 
-      console.log('this.data2', data);
-
-    } /*else {
+    } else {
 
       data = data.filter(function(e) {
-        return e.name1 !== label;
+        const name = e[`name${index}`];
+        return name !== label;
       });
 
-      console.log('this.data2', data);
-    }*/
+      console.log('unchecked', data);
+    }
 
-    // sort array by date asc
-    const sortedData = orderBy(data, [`date${index}`], 'asc');
+    if (!this.changeInRange && !isEmpty(data)) {
 
-    if (!this.changeInRange) {
+      // sort array by date asc
+      const sortedData = orderBy(data, [`date${index}`], 'asc');
 
       // Set chart Data
       this.chart.data = sortedData;
