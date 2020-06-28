@@ -22,7 +22,6 @@ import { EventsService } from '../services/events.service';
   ],
   providers: [
     ApiService,
-    ChartService,
     EventsService
   ],
   bootstrap: [AppComponent]
