@@ -98,8 +98,6 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
         data.push({ [`date${index}`]: data1.meas_time, [`value${index}`]: data1.meas_num_v, [`unit${index}`]: 'kwh', [`name${index}`]: data1.meas_name});
       });
 
-      console.log('checked', data);
-
       this.range = response.setRange;
       this.index = index;
       label = response.label;
@@ -115,8 +113,8 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
       this.dateAxis.disabled = true;
       this.series.disabled = true;
       this.series.name = '';
+      this.series.strokeWidth = 0;
 
-      console.log('unchecked', data);
     }
 
     if (!this.changeInRange && !isEmpty(data)) {
