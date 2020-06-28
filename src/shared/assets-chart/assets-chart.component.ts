@@ -111,6 +111,11 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
         return name !== label;
       });
 
+      this.valueAxis.disabled = true;
+      this.dateAxis.disabled = true;
+      this.series.disabled = true;
+      this.series.name = '';
+
       console.log('unchecked', data);
     }
 
