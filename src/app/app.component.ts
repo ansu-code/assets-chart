@@ -5,6 +5,7 @@ import { EventsService } from '../services/events.service';
 import { isEmpty } from 'lodash';
 
 let checked = false;
+let setRange: any;
 
 @Component({
   selector: 'app-root',
@@ -16,10 +17,10 @@ export class AppComponent implements AfterViewInit {
   private accessToken: any;
   public data: any;
   public first = '2019-06-01';
-  public last = '2020-06-01';
+  public last = '2019-09-01';
   public selectedItem = 'month';
   public dateRange: any[];
-  public measName = [];
+  public label = [];
   public checkBoxValues = [
     {
       name: 'COUNT_KWH_HR'
@@ -43,9 +44,11 @@ export class AppComponent implements AfterViewInit {
     this.accessToken = response.result.access_token;
   }
 
-  public async getData(event, label, changeInRange = true) {
+  public async getData(event, name, changeInRange = true) {
 
     try {
+
+      this.label = name;
 
       if (event) {
 
@@ -53,8 +56,7 @@ export class AppComponent implements AfterViewInit {
           checked = true;
         }
 
-        const setRange = this.dateRange ? this.dateRange : [{first: this.first, last: this.last}];
-        this.measName = label;
+        setRange = this.dateRange ? this.dateRange : [{first: this.first, last: this.last}];
 
         this.data = await this.api.post('SolarSightWS/generic/pg/selectFrom',
           {
@@ -64,7 +66,7 @@ export class AppComponent implements AfterViewInit {
             "cols": ["site_ref_key", "asset_ref_key", "meas_name", "meas_date"],
             "andConditions": [
               {"col": "asset_ref_key", "operator": "IN", "values": ["TEPSOL_SITE_001_110101"]},
-              {"col": "meas_name", "operator": "IN", "values": [this.measName]},
+              {"col": "meas_name", "operator": "IN", "values": [this.label]},
               {"col": "meas_date", "operator": ">=", "value": setRange[0].first},
               {"col": "meas_date", "operator": "<=", "value": setRange[0].last}
             ],
@@ -72,15 +74,20 @@ export class AppComponent implements AfterViewInit {
             "orderType": "ASC"
           }, this.accessToken);
 
-        this.data.setRange = setRange;
-        this.data.checked = checked;
-
-        if(!isEmpty(this.data.result)) {
-          this.events.emit('asset:Data', this.data);
-        } else {
-          alert('No Data for the current range');
-        }
+      } else {
+        checked = false;
       }
+
+      this.data.setRange = setRange;
+      this.data.checked = checked;
+      this.data.label = this.label;
+
+      if(!isEmpty(this.data.result)) {
+        this.events.emit('asset:Data', this.data);
+      } else {
+        alert('No Data for the current range');
+      }
+
     } catch (error) {
       console.log('Error getting response', error);
     }
@@ -88,7 +95,7 @@ export class AppComponent implements AfterViewInit {
 
   public getRangeChangeEvent(selectedItem) {
     this.selectedItem = selectedItem;
-    this.getData(true, this.measName);
+    this.getData(true, this.label);
     checked = false;
   }
 

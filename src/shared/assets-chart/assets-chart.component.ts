@@ -3,11 +3,11 @@ import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import { EventsService } from '../../services/events.service';
 import * as moment from 'moment';
-import { each , orderBy } from 'lodash';
+import { each , orderBy, findIndex } from 'lodash';
 
-const data = [];
+let data = [];
 let index = 0;
-let measName = '';
+let label = '';
 
 @Component({
   selector: 'app-assets-chart',
@@ -55,7 +55,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
   }
 
-  public createAxisAndSeries(date, field, name) {
+  public createAxisAndSeries(date, field, name, response) {
 
     // Create axes and series
 
@@ -90,38 +90,48 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     if (response.checked) {
       this.changeInRange = false;
       index += 1;
-    }
 
-    // Response from API
+      // Response from API
 
-    each(response.result, function (chartResult) {
-      const data1 = JSON.parse(chartResult);
-      measName = data1.meas_name;
-      data.push({ [`date${index}`]: data1.meas_time, [`value${index}`]: data1.meas_num_v, [`unit${index}`]: 'kwh', [`name${index}`]: data1.meas_name});
-    });
+      each(response.result, function (chartResult) {
+        const data1 = JSON.parse(chartResult);
+        data.push({ [`date${index}`]: data1.meas_time, [`value${index}`]: data1.meas_num_v, [`unit${index}`]: 'kwh', [`name${index}`]: data1.meas_name});
+      });
+
+      this.range = response.setRange;
+      this.index = index;
+      label = response.label;
+
+      console.log('this.data2', data);
+
+    } /*else {
+
+      data = data.filter(function(e) {
+        return e.name1 !== label;
+      });
+
+      console.log('this.data2', data);
+    }*/
 
     // sort array by date asc
     const sortedData = orderBy(data, [`date${index}`], 'asc');
 
-    this.range = response.setRange;
-    this.index = index;
-
-    // Set chart Data
-    this.chart.data = sortedData;
-
     if (!this.changeInRange) {
-      this.addSeries();
+
+      // Set chart Data
+      this.chart.data = sortedData;
+      this.addSeries(response);
     }
 
   }
 
-  public addAxisAndSeries(i) {
+  public addAxisAndSeries(i, response) {
     // Create axes and series
-    this.createAxisAndSeries([`date${i}`], [`value${i}`], measName);
+    this.createAxisAndSeries([`date${i}`], [`value${i}`], label, response);
   }
 
-  public addSeries() {
-      this.addAxisAndSeries(this.index);
+  public addSeries(response) {
+    this.addAxisAndSeries(this.index, response);
   }
 
   public getEvent(value) {
