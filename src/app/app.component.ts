@@ -17,7 +17,7 @@ export class AppComponent implements AfterViewInit {
   private accessToken: any;
   public data: any;
   public first = '2019-06-01';
-  public last = '2019-09-01';
+  public last = new Date();
   public selectedItem = 'month';
   public dateRange: any[];
   public label: any;
@@ -57,8 +57,6 @@ export class AppComponent implements AfterViewInit {
           checked = true;
         }
 
-        setRange = this.dateRange ? this.dateRange : [{first: this.first, last: this.last}];
-
         this.data = await this.api.post('SolarSightWS/generic/pg/selectFrom',
           {
             "keySpace": "iot",
@@ -68,8 +66,8 @@ export class AppComponent implements AfterViewInit {
             "andConditions": [
               {"col": "asset_ref_key", "operator": "IN", "values": ["TEPSOL_SITE_001_110101"]},
               {"col": "meas_name", "operator": "IN", "values": [this.label]},
-              {"col": "meas_date", "operator": ">=", "value": setRange[0].first},
-              {"col": "meas_date", "operator": "<=", "value": setRange[0].last}
+              {"col": "meas_date", "operator": ">=", "value": this.first},
+              {"col": "meas_date", "operator": "<=", "value": this.last}
             ],
             "orderBy": "meas_date",
             "orderType": "ASC"
@@ -79,7 +77,7 @@ export class AppComponent implements AfterViewInit {
         checked = false;
       }
 
-      this.data.setRange = setRange;
+      this.data.setRange = this.first;
       this.data.checked = checked;
       this.data.label = this.label;
 
@@ -102,6 +100,13 @@ export class AppComponent implements AfterViewInit {
 
   public getDateRange(dateRange) {
     this.dateRange = dateRange;
+    console.log('dateRange', this.dateRange);
+    this.first = this.dateRange[0].first;
+    this.last = this.dateRange[0].last;
+
+    console.log('this.first', this.first);
+    console.log('this.last', this.last);
+
   }
 
   public getGroupName(groupName) {

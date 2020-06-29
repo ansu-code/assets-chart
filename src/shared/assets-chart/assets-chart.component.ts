@@ -100,7 +100,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
         data.push({ [`date${index}`]: data1.meas_time, [`value${index}`]: data1.meas_num_v, [`unit${index}`]: 'kwh', [`name${index}`]: data1.meas_name});
       });
 
-      this.range = response.setRange;
+      this.range = response.first;
       this.index = index;
       label = response.label;
       this.groupNameArr.push(label);
@@ -162,7 +162,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   public setRange(value) {
 
     this.selectedItem = value;
-    this.lastValue = this.range[0].first;
+    this.lastValue = this.range;
 
     let first;
     const setDateRange = [];
@@ -200,7 +200,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
   public setPreviousRange() {
 
-    this.lastValue = this.range[0].first;
+    this.lastValue = this.range;
 
     let first;
     const setDateRange = [];
@@ -228,7 +228,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
   public setNextRange() {
 
-    this.lastValue = this.range[0].first;
+    this.lastValue = this.range;
 
     let first;
     const setDateRange = [];
