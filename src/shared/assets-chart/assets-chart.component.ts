@@ -26,7 +26,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   public valueAxis: any;
   public series: any;
   public index: any;
-  public changeInRange = false;
+  public changeInRange: any;
   public groupNameArr = [];
 
   @Input() data: any[];
@@ -88,6 +88,17 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   }
 
   public async getData(response) {
+    this.changeInRange = response.changeInRange;
+    console.log('this.resp', this.changeInRange);
+
+    if (!this.changeInRange) {
+      await this.getCheckBoxData(response);
+    } else {
+      await this.getRangeData(response);
+    }
+  }
+
+  public async getCheckBoxData(response) {
 
     if (response.checked) {
       this.changeInRange = false;
@@ -98,14 +109,13 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
       each(response.result, function (chartResult) {
         const data1 = JSON.parse(chartResult);
         data.push({ [`date${index}`]: data1.meas_time, [`value${index}`]: data1.meas_num_v, [`unit${index}`]: 'kwh', [`name${index}`]: data1.meas_name});
+        console.log('data', data);
       });
 
-      this.range = moment(response.last).format('YYYY-MM-DD');
+      this.range = response.last;
       this.index = index;
       label = response.label;
       this.groupNameArr.push(label);
-
-      console.log('this.groupNameArr', this.groupNameArr);
 
     } else {
 
@@ -131,6 +141,28 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
       this.chart.data = sortedData;
       this.addSeries();
     }
+
+  }
+
+  public async getRangeData(response) {
+
+    console.log('this.getRangeData');
+    data = [];
+    // Response from API
+
+      each(response.result, function (chartResult) {
+        const data1 = JSON.parse(chartResult);
+
+        data.push({ date: data1.meas_time, value: data1.meas_num_v, unit: 'kwh', name: data1.meas_name});
+
+        const element = Object.values(data.reduce((setData, { name, value, date, unit }) => {
+          setData[name] = setData[name] || { name, data: [] };
+          setData[name].data.push({ value, date, unit, name });
+          return setData;
+          }, {}));
+       // data.push({ [`date${index}`]: data1.meas_time, [`value${index}`]: data1.meas_num_v, [`unit${index}`]: 'kwh', [`name${index}`]: data1.meas_name});
+        console.log('element', element);
+      });
 
   }
 
@@ -160,6 +192,8 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   }
 
   public setRange(value) {
+
+    this.timeEvent.emit(this.changeInRange);
 
     this.selectedItem = value;
     this.lastValue = this.range;
@@ -200,6 +234,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
   public setPreviousRange() {
 
+    this.timeEvent.emit(this.changeInRange);
     this.lastValue = this.range;
 
     let first;
@@ -228,6 +263,8 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
   public setNextRange() {
 
+    this.timeEvent.emit(this.changeInRange);
+
     this.lastValue = this.range;
 
     let first;
@@ -255,6 +292,9 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
       this.lastValue = moment(this.lastValue).format('YYYY-MM-DD');
     }
 
+    first = '2019-07-01';
+    // public last = moment().format('YYYY-MM-DD');;
+    this.lastValue = '2019-09-01';
     first = moment(first).format('YYYY-MM-DD');
     setDateRange.push({first: first, last: this.lastValue});
 
