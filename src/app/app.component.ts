@@ -77,7 +77,7 @@ export class AppComponent implements AfterViewInit {
         checked = false;
       }
 
-      this.data.setRange = this.first;
+      this.data.last = this.last;
       this.data.checked = checked;
       this.data.label = this.label;
 

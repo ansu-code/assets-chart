@@ -100,7 +100,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
         data.push({ [`date${index}`]: data1.meas_time, [`value${index}`]: data1.meas_num_v, [`unit${index}`]: 'kwh', [`name${index}`]: data1.meas_name});
       });
 
-      this.range = response.first;
+      this.range = moment(response.last).format('YYYY-MM-DD');
       this.index = index;
       label = response.label;
       this.groupNameArr.push(label);
