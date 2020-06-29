@@ -40,6 +40,7 @@
 
 <app-assets-chart
   [data]="data"
+  (groupName)="getGroupName($event)"
   (rangeChangeEvent) = "getRangeChangeEvent($event)"
   (dateRange)="getDateRange($event)"
 ></app-assets-chart>

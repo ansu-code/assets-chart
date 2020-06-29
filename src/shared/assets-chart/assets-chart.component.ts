@@ -27,11 +27,13 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   public series: any;
   public index: any;
   public changeInRange = false;
+  public groupNameArr = [];
 
   @Input() data: any[];
   @Output() dateRange: EventEmitter<any> = new EventEmitter();
   @Output() rangeChangeEvent: EventEmitter<any> = new EventEmitter();
   @Output() timeEvent: EventEmitter<any> = new EventEmitter();
+  @Output() groupName: EventEmitter<any> = new EventEmitter();
 
   constructor(private zone: NgZone, public events: EventsService) {
     events.listen('asset:Data', async (response) => {
@@ -65,11 +67,11 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
       this.series = this.chart.series.push(new am4charts.LineSeries());
       this.series.name = name;
     }
+
     this.dateAxis.renderer.minGridDistance = 50;
     this.dateAxis.renderer.grid.template.location = 0;
     this.dateAxis.renderer.grid.template.strokeOpacity = 0.07;
     this.dateAxis.groupCount = true;
-
 
     this.valueAxis.renderer.minWidth = 60;
     this.valueAxis.renderer.grid.template.strokeOpacity = 0.07;
@@ -101,6 +103,9 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
       this.range = response.setRange;
       this.index = index;
       label = response.label;
+      this.groupNameArr.push(label);
+
+      console.log('this.groupNameArr', this.groupNameArr);
 
     } else {
 
@@ -186,6 +191,8 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     this.chart.cursor.xAxis = this.dateAxis;
 
     this.lastValue = first;
+
+    this.groupName.emit(this.groupNameArr);
     this.dateRange.emit(setDateRange);
     this.rangeChangeEvent.emit(this.selectedItem);
 

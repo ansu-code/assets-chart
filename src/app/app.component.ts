@@ -20,7 +20,8 @@ export class AppComponent implements AfterViewInit {
   public last = '2019-09-01';
   public selectedItem = 'month';
   public dateRange: any[];
-  public label = [];
+  public label: any;
+  public groupNameArr = [];
   public checkBoxValues = [
     {
       name: 'COUNT_KWH_HR'
@@ -101,6 +102,10 @@ export class AppComponent implements AfterViewInit {
 
   public getDateRange(dateRange) {
     this.dateRange = dateRange;
+  }
+
+  public getGroupName(groupName) {
+    this.label = JSON.stringify(groupName);
   }
 
 }
