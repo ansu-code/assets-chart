@@ -22,7 +22,7 @@ export class AppComponent implements AfterViewInit {
   public selectedItem = 'month';
   public dateRange: any[];
   public label = [];
-  public groupNameArr = [];
+  public changeInRange: any;
   public checkBoxValues = [
     {
       name: 'COUNT_KWH_HR'
