@@ -124,11 +124,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
         return name !== label;
       });
 
-      this.valueAxis.disabled = true;
-      this.dateAxis.disabled = true;
-      this.series.disabled = true;
-      this.series.name = '';
-      this.series.strokeWidth = 0;
+      this.resetChartValues();
 
     }
 
@@ -146,24 +142,38 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
   public async getRangeData(response) {
 
+    this.resetChartValues();
+
     console.log('this.getRangeData');
     data = [];
+    let result = [];
+    let sortedData = [];
+
     // Response from API
 
       each(response.result, function (chartResult) {
         const data1 = JSON.parse(chartResult);
-
-        data.push({ date: data1.meas_time, value: data1.meas_num_v, unit: 'kwh', name: data1.meas_name});
-
-        const element = Object.values(data.reduce((setData, { name, value, date, unit }) => {
-          setData[name] = setData[name] || { name, data: [] };
-          setData[name].data.push({ value, date, unit, name });
-          return setData;
-          }, {}));
-       // data.push({ [`date${index}`]: data1.meas_time, [`value${index}`]: data1.meas_num_v, [`unit${index}`]: 'kwh', [`name${index}`]: data1.meas_name});
-        console.log('element', element);
+        result.push({ date: data1.meas_time, value: data1.meas_num_v, unit: 'kwh', name: data1.meas_name});
       });
 
+      const element = Object.values(result.reduce((setData, { name, value, date, unit }) => {
+        setData[name] = setData[name] || { name, data: [] };
+        setData[name].data.push({ value, date, unit, name });
+        return setData;
+      }, {}));
+
+      for (let i = 0; i < element.length; i++) {
+        element[i].data.map(item => {
+          data.push({[`date${i+1}`]: item.date, [`value${i + 1}`]: item.value, [`unit${i+1}`]: item.unit, [`name${i+1}`]: item.name});
+
+          // sort array by date asc
+        //  sortedData = orderBy(data, [`date${i+1}`], 'asc');
+        });
+      }
+
+      console.log('sortedData', data);
+      this.chart.data = data;
+      this.addSeries();
   }
 
   public addAxisAndSeries(i) {
@@ -304,6 +314,14 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     this.dateRange.emit(setDateRange);
     this.rangeChangeEvent.emit(this.selectedItem);
 
+  }
+
+  public resetChartValues() {
+    this.valueAxis.disabled = true;
+    this.dateAxis.disabled = true;
+    this.series.disabled = true;
+    this.series.name = '';
+    this.series.strokeWidth = 0;
   }
 
   public ngOnDestroy() {
