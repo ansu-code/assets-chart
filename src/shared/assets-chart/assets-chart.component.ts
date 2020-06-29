@@ -220,6 +220,8 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     setDateRange.push({first: first, last: this.lastValue});
 
     this.lastValue = first;
+
+    this.groupName.emit(this.groupNameArr);
     this.dateRange.emit(setDateRange);
     this.rangeChangeEvent.emit(this.selectedItem);
   }
@@ -257,6 +259,8 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     setDateRange.push({first: first, last: this.lastValue});
 
     this.lastValue = first;
+
+    this.groupName.emit(this.groupNameArr);
     this.dateRange.emit(setDateRange);
     this.rangeChangeEvent.emit(this.selectedItem);
 
