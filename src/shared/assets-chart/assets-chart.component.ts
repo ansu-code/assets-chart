@@ -61,12 +61,12 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
     // Create axes and series
 
-    if (!this.changeInRange) {
+    //if (!this.changeInRange) {
       this.dateAxis = this.chart.xAxes.push(new am4charts.DateAxis());
       this.valueAxis = this.chart.yAxes.push(new am4charts.ValueAxis());
       this.series = this.chart.series.push(new am4charts.LineSeries());
       this.series.name = name;
-    }
+    //}
 
     this.dateAxis.renderer.minGridDistance = 50;
     this.dateAxis.renderer.grid.template.location = 0;
@@ -109,7 +109,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
       each(response.result, function (chartResult) {
         const data1 = JSON.parse(chartResult);
         data.push({ [`date${index}`]: data1.meas_time, [`value${index}`]: data1.meas_num_v, [`unit${index}`]: 'kwh', [`name${index}`]: data1.meas_name});
-        console.log('data', data);
+        console.log('data121212', data);
       });
 
       this.range = response.last;
@@ -142,8 +142,6 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
   public async getRangeData(response) {
 
-    this.resetChartValues();
-
     console.log('this.getRangeData');
     data = [];
     let result = [];
@@ -156,7 +154,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
         result.push({ date: data1.meas_time, value: data1.meas_num_v, unit: 'kwh', name: data1.meas_name});
       });
 
-      const element = Object.values(result.reduce((setData, { name, value, date, unit }) => {
+      const element: any[] = Object.values(result.reduce((setData, { name, value, date, unit }) => {
         setData[name] = setData[name] || { name, data: [] };
         setData[name].data.push({ value, date, unit, name });
         return setData;
@@ -165,18 +163,19 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
       for (let i = 0; i < element.length; i++) {
         element[i].data.map(item => {
           data.push({[`date${i+1}`]: item.date, [`value${i + 1}`]: item.value, [`unit${i+1}`]: item.unit, [`name${i+1}`]: item.name});
-
-          // sort array by date asc
-        //  sortedData = orderBy(data, [`date${i+1}`], 'asc');
         });
+
       }
 
-      console.log('sortedData', data);
       this.chart.data = data;
+
+      this.resetChartValues();
       this.addSeries();
+
   }
 
   public addAxisAndSeries(i) {
+    console.log('i', i);
     // Create axes and series
     this.createAxisAndSeries([`date${i}`], [`value${i}`], label);
   }
@@ -302,9 +301,9 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
       this.lastValue = moment(this.lastValue).format('YYYY-MM-DD');
     }
 
-    first = '2019-07-01';
+    first = '2019-08-01';
     // public last = moment().format('YYYY-MM-DD');;
-    this.lastValue = '2019-09-01';
+    this.lastValue = '2019-08-08';
     first = moment(first).format('YYYY-MM-DD');
     setDateRange.push({first: first, last: this.lastValue});
 
