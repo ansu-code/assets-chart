@@ -51,6 +51,7 @@ export class AppComponent implements AfterViewInit {
     try {
 
       this.label = name;
+
       console.log('label', this.label);
 
       if (event) {
@@ -102,8 +103,6 @@ export class AppComponent implements AfterViewInit {
     try {
 
       this.label = name;
-      console.log('label', this.label);
-
       if (event) {
 
         if (!changeInRange) {
@@ -164,7 +163,6 @@ export class AppComponent implements AfterViewInit {
 
   public getGroupName(groupName) {
     this.label = groupName;
-    console.log('getGroupName', this.label);
   }
 
   public getTimeEvent(changeInRange) {

@@ -61,12 +61,10 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
     // Create axes and series
 
-    //if (!this.changeInRange) {
-      this.dateAxis = this.chart.xAxes.push(new am4charts.DateAxis());
-      this.valueAxis = this.chart.yAxes.push(new am4charts.ValueAxis());
-      this.series = this.chart.series.push(new am4charts.LineSeries());
-      this.series.name = name;
-    //}
+    this.dateAxis = this.chart.xAxes.push(new am4charts.DateAxis());
+    this.valueAxis = this.chart.yAxes.push(new am4charts.ValueAxis());
+    this.series = this.chart.series.push(new am4charts.LineSeries());
+    this.series.name = name;
 
     this.dateAxis.renderer.minGridDistance = 50;
     this.dateAxis.renderer.grid.template.location = 0;
@@ -89,7 +87,6 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
   public async getData(response) {
     this.changeInRange = response.changeInRange;
-    console.log('this.resp', this.changeInRange);
 
     if (!this.changeInRange) {
       await this.getCheckBoxData(response);
@@ -119,6 +116,8 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
     } else {
 
+      // filter the unchecked group name arrays
+
       data = data.filter(function(e) {
         const name = e[`name${index}`];
         return name !== label;
@@ -128,7 +127,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
     }
 
-    if (!this.changeInRange && !isEmpty(data)) {
+    if (!isEmpty(data)) {
 
       // sort array by date asc
       const sortedData = orderBy(data, [`date${index}`], 'asc');
@@ -142,10 +141,8 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
   public async getRangeData(response) {
 
-    console.log('this.getRangeData');
     data = [];
     let result = [];
-    let sortedData = [];
 
     // Response from API
 
@@ -154,11 +151,15 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
         result.push({ date: data1.meas_time, value: data1.meas_num_v, unit: 'kwh', name: data1.meas_name});
       });
 
+    // Split the array in group name wise
+
       const element: any[] = Object.values(result.reduce((setData, { name, value, date, unit }) => {
         setData[name] = setData[name] || { name, data: [] };
         setData[name].data.push({ value, date, unit, name });
         return setData;
       }, {}));
+
+    // Form the data structure to send the data to chart
 
       for (let i = 0; i < element.length; i++) {
         element[i].data.map(item => {
@@ -175,7 +176,6 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   }
 
   public addAxisAndSeries(i) {
-    console.log('i', i);
     // Create axes and series
     this.createAxisAndSeries([`date${i}`], [`value${i}`], label);
   }
@@ -203,7 +203,6 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   public setRange(value) {
 
     this.timeEvent.emit(this.changeInRange);
-
     this.selectedItem = value;
     this.lastValue = this.range;
 
@@ -273,7 +272,6 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   public setNextRange() {
 
     this.timeEvent.emit(this.changeInRange);
-
     this.lastValue = this.range;
 
     let first;
@@ -314,6 +312,8 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     this.rangeChangeEvent.emit(this.selectedItem);
 
   }
+
+  // Reset Chart Values
 
   public resetChartValues() {
     this.valueAxis.disabled = true;
