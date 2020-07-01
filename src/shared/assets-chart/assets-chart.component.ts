@@ -106,12 +106,11 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
       each(response.result, function (chartResult) {
         const data1 = JSON.parse(chartResult);
         data.push({ [`date${index}`]: data1.meas_time, [`value${index}`]: data1.meas_num_v, [`unit${index}`]: 'kwh', [`name${index}`]: data1.meas_name});
-        console.log('data121212', data);
       });
 
       this.range = response.last;
       this.index = index;
-      label = response.label;
+      label = response.groupName;
       this.groupNameArr.push(label);
 
     } else {
@@ -300,7 +299,6 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     }
 
     first = '2019-08-01';
-    // public last = moment().format('YYYY-MM-DD');;
     this.lastValue = '2019-08-08';
     first = moment(first).format('YYYY-MM-DD');
     setDateRange.push({first: first, last: this.lastValue});

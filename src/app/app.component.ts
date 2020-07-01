@@ -21,7 +21,7 @@ export class AppComponent implements AfterViewInit {
   public last = '2019-09-01';
   public selectedItem = 'month';
   public dateRange: any[];
-  public label: any[];
+  public groupName: any[];
   public changeInRange: any;
   public checkBoxValues = [
     {
@@ -50,15 +50,17 @@ export class AppComponent implements AfterViewInit {
 
     try {
 
-      this.label = name;
+      // assign groupName
 
-      console.log('label', this.label);
+      this.groupName = name;
+
+      // Check Event, Say if the checkbox is clicked
 
       if (event) {
 
         if (!changeInRange) {
           checked = true;
-          this.label = [name];
+          this.groupName = [name];
         }
 
         this.data = await this.api.post('SolarSightWS/generic/pg/selectFrom',
@@ -69,7 +71,7 @@ export class AppComponent implements AfterViewInit {
             "cols": ["site_ref_key", "asset_ref_key", "meas_name", "meas_date"],
             "andConditions": [
               {"col": "asset_ref_key", "operator": "IN", "values": ["TEPSOL_SITE_001_110101"]},
-              {"col": "meas_name", "operator": "IN", "values": this.label},
+              {"col": "meas_name", "operator": "IN", "values": this.groupName},
               {"col": "meas_date", "operator": ">=", "value": this.first},
               {"col": "meas_date", "operator": "<=", "value": this.last}
             ],
@@ -81,12 +83,16 @@ export class AppComponent implements AfterViewInit {
         checked = false;
       }
 
+      // Assign values to send it to the component
+
       this.data.last = this.first;
       this.data.checked = checked;
-      this.data.label = this.label;
+      this.data.groupName = this.groupName;
       this.data.changeInRange = changeInRange;
 
       this.events.emit('asset:Data', this.data);
+
+      // Check if the response from api is empty or not
 
       /* if(!isEmpty(this.data.result)) {
          this.events.emit('asset:Data', this.data);
@@ -99,61 +105,15 @@ export class AppComponent implements AfterViewInit {
     }
   }
 
-  public async getRData(event, name, changeInRange = true) {
-
-    try {
-
-      this.label = name;
-      if (event) {
-
-        if (!changeInRange) {
-          checked = true;
-        }
-
-        this.data = await this.api.post('SolarSightWS/generic/pg/selectFrom',
-          {
-            "keySpace": "iot",
-            "tableName": "asset_meas_by_min_hist",
-            "allCols": true,
-            "cols": ["site_ref_key", "asset_ref_key", "meas_name", "meas_date"],
-            "andConditions": [
-              {"col": "asset_ref_key", "operator": "IN", "values": ["TEPSOL_SITE_001_110101"]},
-              {"col": "meas_name", "operator": "IN", "values": this.label},
-              {"col": "meas_date", "operator": ">=", "value": this.first},
-              {"col": "meas_date", "operator": "<=", "value": this.last}
-            ],
-            "orderBy": "meas_date",
-            "orderType": "ASC"
-          }, this.accessToken);
-
-      } else {
-        checked = false;
-      }
-
-      this.data.last = this.first;
-      this.data.checked = checked;
-      this.data.label = this.label;
-      this.data.changeInRange = changeInRange;
-
-      this.events.emit('asset:Data', this.data);
-
-      /* if(!isEmpty(this.data.result)) {
-         this.events.emit('asset:Data', this.data);
-       } else {
-         alert('No Data for the current range');
-       }*/
-
-    } catch (error) {
-      console.log('Error getting response', error);
-    }
-  }
-
+  // Range Event
 
   public getRangeChangeEvent(selectedItem) {
     this.selectedItem = selectedItem;
-    this.getData(true, this.label, true);
+    this.getData(true, this.groupName, true);
     checked = false;
   }
+
+  // get date ranges
 
   public getDateRange(dateRange) {
     this.dateRange = dateRange;
@@ -162,8 +122,10 @@ export class AppComponent implements AfterViewInit {
 
   }
 
+  // Set Group Name
+
   public getGroupName(groupName) {
-    this.label = flattenDeep(groupName);
+    this.groupName = flattenDeep(groupName);
   }
 
   public getTimeEvent(changeInRange) {
