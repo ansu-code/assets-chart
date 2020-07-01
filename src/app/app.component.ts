@@ -2,7 +2,7 @@ import { AfterViewInit, Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../services/api.service';
 import { EventsService } from '../services/events.service';
-import { isEmpty } from 'lodash';
+import { isEmpty, flattenDeep } from 'lodash';
 import * as moment from 'moment';
 
 let checked = false;
@@ -21,7 +21,7 @@ export class AppComponent implements AfterViewInit {
   public last = '2019-09-01';
   public selectedItem = 'month';
   public dateRange: any[];
-  public label = [];
+  public label: any[];
   public changeInRange: any;
   public checkBoxValues = [
     {
@@ -58,6 +58,7 @@ export class AppComponent implements AfterViewInit {
 
         if (!changeInRange) {
           checked = true;
+          this.label = [name];
         }
 
         this.data = await this.api.post('SolarSightWS/generic/pg/selectFrom',
@@ -68,7 +69,7 @@ export class AppComponent implements AfterViewInit {
             "cols": ["site_ref_key", "asset_ref_key", "meas_name", "meas_date"],
             "andConditions": [
               {"col": "asset_ref_key", "operator": "IN", "values": ["TEPSOL_SITE_001_110101"]},
-              {"col": "meas_name", "operator": "IN", "values": [this.label]},
+              {"col": "meas_name", "operator": "IN", "values": this.label},
               {"col": "meas_date", "operator": ">=", "value": this.first},
               {"col": "meas_date", "operator": "<=", "value": this.last}
             ],
@@ -150,7 +151,7 @@ export class AppComponent implements AfterViewInit {
 
   public getRangeChangeEvent(selectedItem) {
     this.selectedItem = selectedItem;
-    this.getRData(true, this.label, true);
+    this.getData(true, this.label, true);
     checked = false;
   }
 
@@ -162,7 +163,7 @@ export class AppComponent implements AfterViewInit {
   }
 
   public getGroupName(groupName) {
-    this.label = groupName;
+    this.label = flattenDeep(groupName);
   }
 
   public getTimeEvent(changeInRange) {
