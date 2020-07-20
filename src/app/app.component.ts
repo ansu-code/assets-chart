@@ -90,15 +90,13 @@ export class AppComponent implements AfterViewInit {
       this.data.groupName = this.groupName;
       this.data.changeInRange = changeInRange;
 
-      this.events.emit('asset:Data', this.data);
-
       // Check if the response from api is empty or not
 
-      /* if(!isEmpty(this.data.result)) {
+       if (!isEmpty(this.data.result)) {
          this.events.emit('asset:Data', this.data);
        } else {
          alert('No Data for the current range');
-       }*/
+       }
 
     } catch (error) {
       console.log('Error getting response', error);

@@ -61,10 +61,12 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
     // Create axes and series
 
-    this.dateAxis = this.chart.xAxes.push(new am4charts.DateAxis());
-    this.valueAxis = this.chart.yAxes.push(new am4charts.ValueAxis());
-    this.series = this.chart.series.push(new am4charts.LineSeries());
-    this.series.name = name;
+    if (!this.changeInRange) {
+      this.dateAxis = this.chart.xAxes.push(new am4charts.DateAxis());
+      this.valueAxis = this.chart.yAxes.push(new am4charts.ValueAxis());
+      this.series = this.chart.series.push(new am4charts.LineSeries());
+      this.series.name = name;
+    }
 
     this.dateAxis.renderer.minGridDistance = 50;
     this.dateAxis.renderer.grid.template.location = 0;
@@ -167,7 +169,9 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
       }
 
-      this.chart.data = data;
+      const sortedData = orderBy(data, [`date${index}`], 'asc');
+
+      this.chart.data = sortedData;
 
       this.resetChartValues();
       this.addSeries();
@@ -227,9 +231,9 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     // Zoom Chart according to the range
 
     this.dateAxis.zoomToDates(first, this.lastValue);
-    this.addSeries();
-
     this.chart.cursor.xAxis = this.dateAxis;
+
+    this.addSeries();
 
     this.lastValue = first;
 
