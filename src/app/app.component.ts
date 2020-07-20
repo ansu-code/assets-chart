@@ -16,9 +16,8 @@ export class AppComponent implements AfterViewInit {
   title = 'assets-ui';
   private accessToken: any;
   public data: any;
-  public first = '2019-08-01';
-  // public last = moment().format('YYYY-MM-DD');;
-  public last = '2019-09-01';
+  public first = '2019-07-01';
+  public last = moment().format('YYYY-MM-DD');
   public selectedItem = 'month';
   public dateRange: any[];
   public groupName: any[];
@@ -90,14 +89,16 @@ export class AppComponent implements AfterViewInit {
       this.data.groupName = this.groupName;
       this.data.changeInRange = changeInRange;
 
+      this.events.emit('asset:Data', this.data);
+
       // Check if the response from api is empty or not
 
-       if (!isEmpty(this.data.result)) {
+       /*if (!isEmpty(this.data.result)) {
          this.events.emit('asset:Data', this.data);
        } else {
          alert('No Data for the current range');
        }
-
+*/
     } catch (error) {
       console.log('Error getting response', error);
     }
@@ -107,6 +108,7 @@ export class AppComponent implements AfterViewInit {
 
   public getRangeChangeEvent(selectedItem) {
     this.selectedItem = selectedItem;
+    console.log('this.selectedItem', this.selectedItem);
     this.getData(true, this.groupName, true);
     checked = false;
   }

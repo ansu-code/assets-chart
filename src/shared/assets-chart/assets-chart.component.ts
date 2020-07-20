@@ -89,6 +89,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
   public async getData(response) {
     this.changeInRange = response.changeInRange;
+    console.log('changeInRange', this.changeInRange);
 
     if (!this.changeInRange) {
       await this.getCheckBoxData(response);
@@ -107,7 +108,12 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
       each(response.result, function (chartResult) {
         const data1 = JSON.parse(chartResult);
-        data.push({ [`date${index}`]: data1.meas_time, [`value${index}`]: data1.meas_num_v, [`unit${index}`]: 'kwh', [`name${index}`]: data1.meas_name});
+        data.push({
+          [`date${index}`]: data1.meas_time,
+          [`value${index}`]: data1.meas_num_v,
+          [`unit${index}`]: 'kwh',
+          [`name${index}`]: data1.meas_name
+        });
       });
 
       this.range = response.last;
@@ -119,7 +125,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
       // filter the unchecked group name arrays
 
-      data = data.filter(function(e) {
+      data = data.filter(function (e) {
         const name = e[`name${index}`];
         return name !== label;
       });
@@ -141,30 +147,37 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   }
 
   public async getRangeData(response) {
+    console.log('no data');
 
-    data = [];
-    let result = [];
+    if (!isEmpty(response.result)) {
+      data = [];
+      let result = [];
 
-    // Response from API
+      // Response from API
 
       each(response.result, function (chartResult) {
         const data1 = JSON.parse(chartResult);
-        result.push({ date: data1.meas_time, value: data1.meas_num_v, unit: 'kwh', name: data1.meas_name});
+        result.push({date: data1.meas_time, value: data1.meas_num_v, unit: 'kwh', name: data1.meas_name});
       });
 
-    // Split the array in group name wise
+      // Split the array in group name wise
 
-      const element: any[] = Object.values(result.reduce((setData, { name, value, date, unit }) => {
-        setData[name] = setData[name] || { name, data: [] };
-        setData[name].data.push({ value, date, unit, name });
+      const element: any[] = Object.values(result.reduce((setData, {name, value, date, unit}) => {
+        setData[name] = setData[name] || {name, data: []};
+        setData[name].data.push({value, date, unit, name});
         return setData;
       }, {}));
 
-    // Form the data structure to send the data to chart
+      // Form the data structure to send the data to chart
 
       for (let i = 0; i < element.length; i++) {
         element[i].data.map(item => {
-          data.push({[`date${i+1}`]: item.date, [`value${i + 1}`]: item.value, [`unit${i+1}`]: item.unit, [`name${i+1}`]: item.name});
+          data.push({
+            [`date${i + 1}`]: item.date,
+            [`value${i + 1}`]: item.value,
+            [`unit${i + 1}`]: item.unit,
+            [`name${i + 1}`]: item.name
+          });
         });
 
       }
@@ -175,6 +188,11 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
       this.resetChartValues();
       this.addSeries();
+
+    } else {
+      console.log('no data');
+      this.resetChartValues();
+    }
 
   }
 
@@ -277,6 +295,8 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     this.timeEvent.emit(this.changeInRange);
     this.lastValue = this.range;
 
+    console.log('changeInRange', this.changeInRange);
+
     let first;
     const setDateRange = [];
 
@@ -285,26 +305,24 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
       this.dateAxis.groupCount = 6 * 24 * 7;
       first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() + 7);
       this.lastValue = new Date(first).setDate(new Date(first).getDate() + 7);
-      this.lastValue = moment(this.lastValue).format('YYYY-MM-DD');
 
     } else if (this.selectedItem === 'hour' || this.selectedItem === 'day') {
 
       this.dateAxis.groupCount = this.selectedItem === 'hour' ? 24 * 30 : 30;
       first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() + 30);
       this.lastValue = new Date(first).setDate(new Date(first).getDate() + 30);
-      this.lastValue = moment(this.lastValue).format('YYYY-MM-DD');
 
     } else {
 
       this.dateAxis.groupCount = 13;
       first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() + 365);
       this.lastValue = new Date(first).setDate(new Date(first).getDate() + 365);
-      this.lastValue = moment(this.lastValue).format('YYYY-MM-DD');
     }
-
-    first = '2019-08-01';
-    this.lastValue = '2019-08-08';
     first = moment(first).format('YYYY-MM-DD');
+    this.lastValue = moment(this.lastValue).format('YYYY-MM-DD');
+
+    console.log('first', first);
+    console.log('first', this.lastValue);
     setDateRange.push({first: first, last: this.lastValue});
 
     this.lastValue = first;
