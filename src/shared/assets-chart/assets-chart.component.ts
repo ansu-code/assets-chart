@@ -78,7 +78,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     // Create series
 
     this.series.dataFields.valueY = field;
-    this.series.groupFields.valueY = 'sum';
+    //  this.series.groupFields.valueY = 'sum';
     this.series.dataFields.dateX = date;
     this.series.strokeWidth = 2;
     this.series.yAxis = this.valueAxis;
@@ -135,17 +135,18 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
       data = data.filter(function (e) {
 
         const name = e[`name${index}`];
-        // console.log('label', label.toString());
-        console.log('name', e[`name${index}`]);
-
         return name !== label.toString();
       });
 
-      console.log('data', data);
+      const sortedData = orderBy(data, [`date${index}`], 'asc');
 
+      this.chart.data = sortedData;
+
+      console.log('data', data);
       index -= 1;
 
       this.resetChartValues();
+
 
     }
 
@@ -344,11 +345,19 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   // Reset Chart Values
 
   public resetChartValues() {
+
+    this.chart.validateData();
     this.valueAxis.disabled = true;
     this.dateAxis.disabled = true;
     this.series.disabled = true;
     this.series.name = '';
     this.series.strokeWidth = 0;
+    console.log('index', index);
+    this.chart.series.removeIndex(index);
+
+    if (isEmpty(data)) {
+      this.chart.series.clear();
+    }
   }
 
   public ngOnDestroy() {
@@ -357,7 +366,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
         this.chart.dispose();
       }
     });
-
     this.events.dispose('asset:Data');
+
   }
 }
