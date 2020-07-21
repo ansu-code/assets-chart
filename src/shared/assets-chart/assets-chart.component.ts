@@ -268,10 +268,10 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
     if (this.selectedItem === 'minute') {
       this.dateAxis.groupCount = 60 * 24 * 7;
-      first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 7);
+      first = moment(this.lastValue).subtract(1, 'week').format('YYYY-MM-DD');
     } else if (this.selectedItem === 'hour' || this.selectedItem === 'day') {
       this.dateAxis.groupCount = this.selectedItem === 'hour' ? 24 * 30 : 30;
-      first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 30);
+      first = moment(this.lastValue).subtract(1, 'months').format('YYYY-MM-DD');
     } else {
       this.dateAxis.groupCount = 13;
       first = moment(this.lastValue).subtract(1, 'year').format('YYYY-MM-DD');
@@ -298,14 +298,13 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     if (this.selectedItem === 'minute') {
 
       this.dateAxis.groupCount = 6 * 24 * 7;
-      first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() + 7);
-      this.lastValue = new Date(first).setDate(new Date(first).getDate() + 7);
+      first = moment(this.lastValue).add(1, 'week').format('YYYY-MM-DD');
+      this.lastValue = moment(first).add(1, 'week').format('YYYY-MM-DD');
 
     } else if (this.selectedItem === 'hour' || this.selectedItem === 'day') {
-
       this.dateAxis.groupCount = this.selectedItem === 'hour' ? 24 * 30 : 30;
-      first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() + 30);
-      this.lastValue = new Date(first).setDate(new Date(first).getDate() + 30);
+      first = moment(this.lastValue).add(1, 'months').format('YYYY-MM-DD');
+      this.lastValue = moment(first).add(1, 'months').format('YYYY-MM-DD');
 
     } else {
 
