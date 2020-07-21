@@ -21,7 +21,6 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   private chart: am4charts.XYChart;
   public lastValue: any;
   public selectedItem = 'month';
-  public range: any;
   public dateAxis: any;
   public valueAxis: any;
   public series: any;
@@ -116,7 +115,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
         });
       });
 
-      this.range = response.last;
+      this.lastValue = response.last;
       this.index = index;
       label = response.groupName;
       this.groupNameArr.push(label);
@@ -225,7 +224,6 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
     this.timeEvent.emit(this.changeInRange);
     this.selectedItem = value;
-    this.lastValue = this.range;
 
     let first;
     const setDateRange = [];
@@ -264,7 +262,6 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   public setPreviousRange() {
 
     this.timeEvent.emit(this.changeInRange);
-    this.lastValue = this.range;
 
     let first;
     const setDateRange = [];
@@ -277,10 +274,9 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
       first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 30);
     } else {
       this.dateAxis.groupCount = 13;
-      first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 365);
+      first = moment(this.lastValue).subtract(1, 'year').format('YYYY-MM-DD');
     }
 
-    first = moment(first).format('YYYY-MM-DD');
     setDateRange.push({first: first, last: this.lastValue});
 
     this.lastValue = first;
@@ -293,7 +289,6 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   public setNextRange() {
 
     this.timeEvent.emit(this.changeInRange);
-    this.lastValue = this.range;
 
     console.log('changeInRange', this.changeInRange);
 
@@ -315,14 +310,12 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     } else {
 
       this.dateAxis.groupCount = 13;
-      first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() + 365);
-      this.lastValue = new Date(first).setDate(new Date(first).getDate() + 365);
+      first = moment(this.lastValue).add(1, 'year').format('YYYY-MM-DD');
+      this.lastValue = moment(first).add(1, 'year').format('YYYY-MM-DD');
     }
-    first = moment(first).format('YYYY-MM-DD');
-    this.lastValue = moment(this.lastValue).format('YYYY-MM-DD');
 
     console.log('first', first);
-    console.log('first', this.lastValue);
+    console.log('firstlast', this.lastValue);
     setDateRange.push({first: first, last: this.lastValue});
 
     this.lastValue = first;

@@ -4,6 +4,7 @@ import { ApiService } from '../services/api.service';
 import { EventsService } from '../services/events.service';
 import { isEmpty, flattenDeep } from 'lodash';
 import * as moment from 'moment';
+import {first} from "rxjs/operators";
 
 let checked = false;
 
@@ -16,7 +17,7 @@ export class AppComponent implements AfterViewInit {
   title = 'assets-ui';
   private accessToken: any;
   public data: any;
-  public first = '2019-07-01';
+  public first = moment().subtract(365, 'd').format('YYYY-MM-DD');
   public last = moment().format('YYYY-MM-DD');
   public selectedItem = 'month';
   public dateRange: any[];
@@ -48,6 +49,9 @@ export class AppComponent implements AfterViewInit {
   public async getData(event, name, changeInRange = true) {
 
     try {
+
+      console.log('first', this.first);
+      console.log('last', this.last);
 
       // assign groupName
 
