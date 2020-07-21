@@ -19,6 +19,10 @@ export class AppComponent implements AfterViewInit {
   public data: any;
   public first = moment().subtract(365, 'd').format('YYYY-MM-DD');
   public last = moment().format('YYYY-MM-DD');
+
+  /*public first = '2019-08-21';
+  public last = '2019-09-21';*/
+
   public selectedItem = 'month';
   public dateRange: any[];
   public groupName: any[];

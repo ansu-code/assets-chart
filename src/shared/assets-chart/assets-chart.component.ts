@@ -7,7 +7,7 @@ import { each , orderBy, findIndex, isEmpty } from 'lodash';
 
 let data = [];
 let index = 0;
-let label = '';
+let label;
 
 @Component({
   selector: 'app-assets-chart',
@@ -78,16 +78,23 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     // Create series
 
     this.series.dataFields.valueY = field;
+    this.series.groupFields.valueY = 'sum';
     this.series.dataFields.dateX = date;
     this.series.strokeWidth = 2;
     this.series.yAxis = this.valueAxis;
     this.series.xAxis = this.dateAxis;
     this.series.tooltipText = "{name}: [bold]{valueY}[/]";
     this.series.tensionX = 0.8;
+
+
+    console.log('dateAxis', this.dateAxis);
+
   }
 
   public async getData(response) {
     this.changeInRange = response.changeInRange;
+    label = response.groupName;
+
     console.log('changeInRange', this.changeInRange);
 
     if (!this.changeInRange) {
@@ -98,6 +105,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   }
 
   public async getCheckBoxData(response) {
+    console.log('response.checked', response.checked);
 
     if (response.checked) {
       this.changeInRange = false;
@@ -117,7 +125,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
       this.lastValue = response.last;
       this.index = index;
-      label = response.groupName;
+      console.log('response', response);
       this.groupNameArr.push(label);
 
     } else {
@@ -125,9 +133,17 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
       // filter the unchecked group name arrays
 
       data = data.filter(function (e) {
+
         const name = e[`name${index}`];
-        return name !== label;
+        // console.log('label', label.toString());
+        console.log('name', e[`name${index}`]);
+
+        return name !== label.toString();
       });
+
+      console.log('data', data);
+
+      index -= 1;
 
       this.resetChartValues();
 
@@ -146,7 +162,6 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   }
 
   public async getRangeData(response) {
-    console.log('no data');
 
     if (!isEmpty(response.result)) {
       data = [];
@@ -189,7 +204,6 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
       this.addSeries();
 
     } else {
-      console.log('no data');
       this.resetChartValues();
     }
 
@@ -221,6 +235,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   }
 
   public setRange(value) {
+    this.dateAxis.groupCount = 0;
 
     this.timeEvent.emit(this.changeInRange);
     this.selectedItem = value;
@@ -230,23 +245,24 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
     if (this.selectedItem === 'minute') {
       this.dateAxis.groupCount = 60 * 24 * 8;
-      first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 8);
+      console.log('this.dateAxis.groupCount', this.dateAxis.groupCount);
+      first = moment(this.lastValue).subtract(8, 'days').format('YYYY-MM-DD');
 
     } else if (this.selectedItem === 'hour' || this.selectedItem === 'day') {
       this.dateAxis.groupCount = this.selectedItem === 'hour' ? 24 * 31 : 31;
-      first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 31);
+      first = moment(this.lastValue).subtract(31, 'days').format('YYYY-MM-DD');
 
     } else {
       this.dateAxis.groupCount = 13;
-      first = new Date(this.lastValue).setDate(new Date(this.lastValue).getDate() - 365);
+      first = moment(this.lastValue).subtract(1, 'year').format('YYYY-MM-DD');
     }
 
-    first = moment(first).format('YYYY-MM-DD');
     setDateRange.push({first: first, last: this.lastValue});
 
     // Zoom Chart according to the range
 
     this.dateAxis.zoomToDates(first, this.lastValue);
+    console.log('dateAxis', this.dateAxis);
     this.chart.cursor.xAxis = this.dateAxis;
 
     this.addSeries();
