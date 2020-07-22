@@ -51,8 +51,8 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     this.chart.legend = new am4charts.Legend();
     this.chart.cursor = new am4charts.XYCursor();
     this.chart.scrollbarX = scrollbarX;
-    this.chart.legend.parent = this.chart.plotContainer;
-    this.chart.legend.zIndex = 100;
+ //   this.chart.legend.parent = this.chart.plotContainer;
+ //   this.chart.legend.zIndex = 100;
 
   }
 
@@ -69,6 +69,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
     this.dateAxis.renderer.minGridDistance = 50;
     this.dateAxis.renderer.grid.template.location = 0;
+
     this.dateAxis.renderer.grid.template.strokeOpacity = 0.07;
     this.dateAxis.groupCount = true;
 
@@ -78,16 +79,16 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     // Create series
 
     this.series.dataFields.valueY = field;
-    //  this.series.groupFields.valueY = 'sum';
+    // this.series.groupFields.valueY = 'sum';
     this.series.dataFields.dateX = date;
     this.series.strokeWidth = 2;
     this.series.yAxis = this.valueAxis;
+
     this.series.xAxis = this.dateAxis;
     this.series.tooltipText = "{name}: [bold]{valueY}[/]";
     this.series.tensionX = 0.8;
 
-
-    console.log('dateAxis', this.dateAxis);
+    console.log('series', this.series);
 
   }
 
@@ -123,6 +124,11 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
         });
       });
 
+      data = data.filter(function (e) {
+        const value = e[`value${index}`];
+        return value !== 0;
+      });
+
       this.lastValue = response.last;
       this.index = index;
       console.log('response', response);
@@ -143,7 +149,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
       this.chart.data = sortedData;
 
       console.log('data', data);
-      index -= 1;
+      // index -= 1;
 
       this.resetChartValues();
 
@@ -324,8 +330,9 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
       this.lastValue = moment(first).add(1, 'months').format('YYYY-MM-DD');
 
     } else {
-
-      this.dateAxis.groupCount = 13;
+      /*this.dateAxis.gridIntervals = [
+        {timeUnit: "year", count: 1}];*/
+       this.dateAxis.groupCount = 13;
       first = moment(this.lastValue).add(1, 'year').format('YYYY-MM-DD');
       this.lastValue = moment(first).add(1, 'year').format('YYYY-MM-DD');
     }
@@ -346,18 +353,18 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
   public resetChartValues() {
 
-    this.chart.validateData();
+    // this.chart.validateData();
     this.valueAxis.disabled = true;
     this.dateAxis.disabled = true;
     this.series.disabled = true;
     this.series.name = '';
     this.series.strokeWidth = 0;
     console.log('index', index);
-    this.chart.series.removeIndex(index);
+    // this.chart.series.removeIndex(index);
 
-    if (isEmpty(data)) {
-      this.chart.series.clear();
-    }
+    /*  if (isEmpty(data)) {
+        this.chart.series.clear();
+      }*/
   }
 
   public ngOnDestroy() {
@@ -370,3 +377,4 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
   }
 }
+
