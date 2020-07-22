@@ -36,7 +36,13 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
   constructor(private zone: NgZone, public events: EventsService) {
     events.listen('asset:Data', async (response) => {
-      await this.getData(response);
+      console.log('response', response);
+      if (!isEmpty(response)) {
+        await this.getData(response);
+      } else {
+        data = [];
+        this.resetChartValues();
+      }
     });
   }
 
@@ -95,8 +101,6 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   public async getData(response) {
     this.changeInRange = response.changeInRange;
     label = response.groupName;
-
-    console.log('changeInRange', this.changeInRange);
 
     if (!this.changeInRange) {
       await this.getCheckBoxData(response);
@@ -170,7 +174,6 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
   public async getRangeData(response) {
 
-    if (!isEmpty(response.result)) {
       data = [];
       let result = [];
 
@@ -203,16 +206,16 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
       }
 
+      data = data.filter(function (e) {
+        const value = e[`value${index}`];
+        return value !== 0;
+      });
+
+      console.log('Rangedata', data);
+
       const sortedData = orderBy(data, [`date${index}`], 'asc');
 
       this.chart.data = sortedData;
-
-      this.resetChartValues();
-      this.addSeries();
-
-    } else {
-      this.resetChartValues();
-    }
 
   }
 
@@ -251,11 +254,16 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     const setDateRange = [];
 
     if (this.selectedItem === 'minute') {
+      /*console.log('minute');
+      first = '2019-08-01';
+      this.lastValue = '2019-08-10';*/
       this.dateAxis.groupCount = 60 * 24 * 8;
       console.log('this.dateAxis.groupCount', this.dateAxis.groupCount);
       first = moment(this.lastValue).subtract(8, 'days').format('YYYY-MM-DD');
 
     } else if (this.selectedItem === 'hour' || this.selectedItem === 'day') {
+      /*first = '2019-08-01';
+      this.lastValue = '2019-09-10';*/
       this.dateAxis.groupCount = this.selectedItem === 'hour' ? 24 * 31 : 31;
       first = moment(this.lastValue).subtract(31, 'days').format('YYYY-MM-DD');
 
@@ -268,11 +276,11 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
     // Zoom Chart according to the range
 
-    this.dateAxis.zoomToDates(first, this.lastValue);
+   // this.dateAxis.zoomToDates(first, this.lastValue);
     console.log('dateAxis', this.dateAxis);
     this.chart.cursor.xAxis = this.dateAxis;
 
-    this.addSeries();
+    // this.addSeries();
 
     this.lastValue = first;
 
@@ -359,12 +367,20 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     this.series.disabled = true;
     this.series.name = '';
     this.series.strokeWidth = 0;
-    console.log('index', index);
+    console.log('this.chart.series', this.chart);
     // this.chart.series.removeIndex(index);
+    const getIndex = this.chart.yAxes.length;
 
-    /*  if (isEmpty(data)) {
+      if (isEmpty(data)) {
         this.chart.series.clear();
-      }*/
+        this.chart.yAxes.clear();
+        this.chart.xAxes.clear();
+        /* this.chart.yAxes.removeIndex( 1);
+         this.chart.xAxes.removeIndex( 0);
+         this.chart.xAxes.removeIndex( 1);*/
+        console.log('this.chart.yaxes', this.chart.yAxes.length);
+
+      }
   }
 
   public ngOnDestroy() {
