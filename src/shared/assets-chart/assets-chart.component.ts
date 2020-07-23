@@ -79,6 +79,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
       this.series = this.chart.series.push(new am4charts.LineSeries());
       this.series.name = name;
       this.createNewAxis = false;
+      this.dateAxis.groupCount = 13;
      }
 
     console.log('groupCount', this.dateAxis.groupCount);
@@ -308,7 +309,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
     this.groupName.emit(this.groupNameArr);
     this.dateRange.emit(setDateRange);
-    this.rangeChangeEvent.emit(this.selectedItem);
+    this.rangeChangeEvent.emit({ month: this.selectedItem, value: ''});
 
   }
 
@@ -336,7 +337,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
     this.groupName.emit(this.groupNameArr);
     this.dateRange.emit(setDateRange);
-    this.rangeChangeEvent.emit(this.selectedItem);
+    this.rangeChangeEvent.emit({ month: this.selectedItem, value: 'previous'});
   }
 
   public setNextRange() {
@@ -375,7 +376,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
     this.groupName.emit(this.groupNameArr);
     this.dateRange.emit(setDateRange);
-    this.rangeChangeEvent.emit(this.selectedItem);
+    this.rangeChangeEvent.emit({ month: this.selectedItem, value: 'next'});
 
   }
 
