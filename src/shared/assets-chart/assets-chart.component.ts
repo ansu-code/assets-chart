@@ -27,6 +27,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   public index: any;
   public changeInRange: any;
   public groupNameArr = [];
+  public createNewAxis: boolean;
 
   @Input() data: any[];
   @Output() dateRange: EventEmitter<any> = new EventEmitter();
@@ -65,19 +66,29 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   public createAxisAndSeries(date, field, name) {
 
     // Create axes and series
+   // console.log('yAxes', this.chart.yAxes.length);
 
-    if (!this.changeInRange) {
+    if (this.chart.yAxes.length === 0 && this.chart.xAxes.length === 0) {
+      console.log('yAxes xAxes');
+      this.createNewAxis = true;
+    }
+
+     if (!this.changeInRange || this.createNewAxis) {
       this.dateAxis = this.chart.xAxes.push(new am4charts.DateAxis());
       this.valueAxis = this.chart.yAxes.push(new am4charts.ValueAxis());
       this.series = this.chart.series.push(new am4charts.LineSeries());
       this.series.name = name;
-    }
+     }
+
+    console.log('groupCount', this.dateAxis.groupCount);
 
     this.dateAxis.renderer.minGridDistance = 50;
     this.dateAxis.renderer.grid.template.location = 0;
 
     this.dateAxis.renderer.grid.template.strokeOpacity = 0.07;
-    this.dateAxis.groupCount = true;
+    this.dateAxis.groupData = true;
+
+    console.log('groupCount', this.dateAxis);
 
     this.valueAxis.renderer.minWidth = 60;
     this.valueAxis.renderer.grid.template.strokeOpacity = 0.07;
@@ -94,7 +105,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     this.series.tooltipText = "{name}: [bold]{valueY}[/]";
     this.series.tensionX = 0.8;
 
-    console.log('series', this.series);
+    console.log('series groupCount', this.dateAxis.groupCount);
 
   }
 
@@ -174,6 +185,8 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
   public async getRangeData(response) {
 
+    console.log('im in');
+
       data = [];
       let result = [];
 
@@ -211,11 +224,12 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
         return value !== 0;
       });
 
-      console.log('Rangedata', data);
+      console.log('data', data);
 
       const sortedData = orderBy(data, [`date${index}`], 'asc');
 
       this.chart.data = sortedData;
+      this.addSeries();
 
   }
 
@@ -229,6 +243,8 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   }
 
   public getEvent(value) {
+    console.log('im in getEvent');
+
     this.changeInRange = true;
 
     switch (value) {
@@ -245,6 +261,8 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   }
 
   public setRange(value) {
+    console.log('im in setRange');
+
     this.dateAxis.groupCount = 0;
 
     this.timeEvent.emit(this.changeInRange);
@@ -268,7 +286,10 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
       first = moment(this.lastValue).subtract(31, 'days').format('YYYY-MM-DD');
 
     } else {
+
       this.dateAxis.groupCount = 13;
+      /*first = '2019-08-01';
+      this.lastValue = '2020-07-23';*/
       first = moment(this.lastValue).subtract(1, 'year').format('YYYY-MM-DD');
     }
 
@@ -369,7 +390,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     this.series.strokeWidth = 0;
     console.log('this.chart.series', this.chart);
     // this.chart.series.removeIndex(index);
-    const getIndex = this.chart.yAxes.length;
+    // const getIndex = this.chart.yAxes.length;
 
       if (isEmpty(data)) {
         this.chart.series.clear();
