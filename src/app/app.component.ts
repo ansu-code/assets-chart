@@ -116,9 +116,13 @@ export class AppComponent implements AfterViewInit {
   // Range Event
 
   public getRangeChangeEvent(selectedItem) {
-    this.selectedItem = selectedItem;
-    console.log('this.selectedItem', this.selectedItem);
-    this.getData(true, this.groupName, true);
+    if (this.selectedItem !== selectedItem) {
+      this.selectedItem = selectedItem;
+      console.log('this.selectedItem', this.selectedItem);
+      this.getData(true, this.groupName, true);
+    } else {
+      alert('Please select different range');
+    }
     checked = false;
   }
 
