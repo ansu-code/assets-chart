@@ -233,25 +233,17 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
   public addAxisAndSeries(i) {
 
+    this.createAxisAndSeries([`date${i}`], [`value${i}`], label);
+
     if (this.chart.yAxes.length === 0 && this.chart.xAxes.length === 0) {
-      console.log('label', label.length);
       if (label.length > 1) {
         for (let j = 1; j <= label.length; j++) {
-          console.log('label', j);
-          console.log('label', label);
           this.createNewAxis = true;
           this.createAxisAndSeries([`date${j}`], [`value${j}`], label[j-1]);
         }
-      } else {
-        // console.log('label', label);
-
-        console.log('id ', i);
-
-        this.createAxisAndSeries([`date${i}`], [`value${i}`], label[i-1]);
       }
     }
-    // Create axes and series
-  //  this.createAxisAndSeries([`date${i}`], [`value${i}`], label);
+
   }
 
   public addSeries() {
