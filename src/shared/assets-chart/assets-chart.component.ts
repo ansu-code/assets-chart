@@ -307,8 +307,9 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     // Zoom Chart according to the range
 
     // this.dateAxis.zoomToDates(first, this.lastValue);
-    console.log('dateAxis', this.valueAxis);
-    this.chart.cursor.xAxis = this.dateAxis;
+    if (!isEmpty(data)) {
+      this.chart.cursor.xAxis = this.dateAxis;
+    }
 
     // this.addSeries();
 
