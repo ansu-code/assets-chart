@@ -20,7 +20,6 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   public isChecked = false;
   private chart: am4charts.XYChart;
   public lastValue: any;
-  public firstValue: any;
   public selectedItem = 'month';
   public dateAxis: any;
   public valueAxis: any;
@@ -144,7 +143,6 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
       });
 
       this.lastValue = response.last;
-      this.firstValue = response.first;
       this.index = index;
       console.log('response', response);
       this.groupNameArr.push(label);
@@ -280,40 +278,41 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
     console.log('im in selectedItem', this.selectedItem);
 
+    let first;
     const setDateRange = [];
 
     if (this.selectedItem === 'minute') {
      /* console.log('minute');
-      this.firstValue = '2019-08-01';
+      first = '2019-08-01';
       this.lastValue = '2019-08-10';*/
       this.dateAxis.groupCount = 60 * 24 * 8;
-      this.firstValue = moment(this.lastValue).subtract(8, 'days').format('YYYY-MM-DD');
+      first = moment(this.lastValue).subtract(8, 'days').format('YYYY-MM-DD');
 
     } else if (this.selectedItem === 'hour' || this.selectedItem === 'day') {
-      /*this.firstValue = '2019-08-01';
+      /*first = '2019-08-01';
       this.lastValue = '2019-09-10';*/
       this.dateAxis.groupCount = this.selectedItem === 'hour' ? 24 * 31 : 31;
-      this.firstValue = moment(this.lastValue).subtract(31, 'days').format('YYYY-MM-DD');
+      first = moment(this.lastValue).subtract(31, 'days').format('YYYY-MM-DD');
 
     } else {
 
       this.dateAxis.groupCount = 13;
-      /*this.firstValue = '2019-08-01';
+      /*first = '2019-08-01';
       this.lastValue = '2020-07-23';*/
-      this.firstValue = moment(this.lastValue).subtract(1, 'year').format('YYYY-MM-DD');
+      first = moment(this.lastValue).subtract(1, 'year').format('YYYY-MM-DD');
     }
 
-    setDateRange.push({first: this.firstValue, last: this.lastValue});
+    setDateRange.push({first: first, last: this.lastValue});
 
     // Zoom Chart according to the range
 
-    // this.dateAxis.zoomToDates(this.firstValue, this.lastValue);
+    // this.dateAxis.zoomToDates(first, this.lastValue);
     console.log('dateAxis', this.valueAxis);
     this.chart.cursor.xAxis = this.dateAxis;
 
     // this.addSeries();
 
-    this.lastValue = this.firstValue;
+    this.lastValue = first;
 
     this.groupName.emit(this.groupNameArr);
     this.dateRange.emit(setDateRange);
@@ -325,22 +324,23 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
     this.timeEvent.emit(this.changeInRange);
 
+    let first;
     const setDateRange = [];
 
     if (this.selectedItem === 'minute') {
       this.dateAxis.groupCount = 60 * 24 * 7;
-      this.firstValue = moment(this.lastValue).subtract(1, 'week').format('YYYY-MM-DD');
+      first = moment(this.lastValue).subtract(1, 'week').format('YYYY-MM-DD');
     } else if (this.selectedItem === 'hour' || this.selectedItem === 'day') {
       this.dateAxis.groupCount = this.selectedItem === 'hour' ? 24 * 30 : 30;
-      this.firstValue = moment(this.lastValue).subtract(1, 'months').format('YYYY-MM-DD');
+      first = moment(this.lastValue).subtract(1, 'months').format('YYYY-MM-DD');
     } else {
       this.dateAxis.groupCount = 13;
-      this.firstValue = moment(this.lastValue).subtract(1, 'year').format('YYYY-MM-DD');
+      first = moment(this.lastValue).subtract(1, 'year').format('YYYY-MM-DD');
     }
 
-    setDateRange.push({first: this.firstValue, last: this.lastValue});
+    setDateRange.push({first: first, last: this.lastValue});
 
-    this.lastValue = this.firstValue;
+    this.lastValue = first;
 
     this.groupName.emit(this.groupNameArr);
     this.dateRange.emit(setDateRange);
@@ -355,32 +355,33 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
     console.log('changeInRange', this.changeInRange);
 
+    let first;
     const setDateRange = [];
 
     if (this.selectedItem === 'minute') {
 
       this.dateAxis.groupCount = 60 * 24 * 7;
-      this.firstValue = moment(this.lastValue).add(1, 'week').format('YYYY-MM-DD');
-      this.lastValue = moment(this.firstValue).add(1, 'week').format('YYYY-MM-DD');
+      first = moment(this.lastValue).add(1, 'week').format('YYYY-MM-DD');
+      this.lastValue = moment(first).add(1, 'week').format('YYYY-MM-DD');
 
     } else if (this.selectedItem === 'hour' || this.selectedItem === 'day') {
       this.dateAxis.groupCount = this.selectedItem === 'hour' ? 24 * 30 : 30;
-      this.firstValue = moment(this.lastValue).add(1, 'months').format('YYYY-MM-DD');
-      this.lastValue = moment(this.firstValue).add(1, 'months').format('YYYY-MM-DD');
+      first = moment(this.lastValue).add(1, 'months').format('YYYY-MM-DD');
+      this.lastValue = moment(first).add(1, 'months').format('YYYY-MM-DD');
 
     } else {
       /*this.dateAxis.gridIntervals = [
         {timeUnit: "year", count: 1}];*/
-      this.dateAxis.groupCount = 13;
-      this.firstValue = moment(this.lastValue).add(1, 'year').format('YYYY-MM-DD');
-      this.lastValue = moment(this.firstValue).add(1, 'year').format('YYYY-MM-DD');
+       this.dateAxis.groupCount = 13;
+      first = moment(this.lastValue).add(1, 'year').format('YYYY-MM-DD');
+      this.lastValue = moment(first).add(1, 'year').format('YYYY-MM-DD');
     }
 
-    console.log('first', this.firstValue);
+    console.log('first', first);
     console.log('firstlast', this.lastValue);
-    setDateRange.push({first: this.firstValue, last: this.lastValue});
+    setDateRange.push({first: first, last: this.lastValue});
 
-    this.lastValue = this.firstValue;
+    this.lastValue = first;
 
     this.groupName.emit(this.groupNameArr);
     this.dateRange.emit(setDateRange);

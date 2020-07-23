@@ -93,7 +93,6 @@ export class AppComponent implements AfterViewInit {
       // Assign values to send it to the component
 
       this.data.last = this.first;
-      this.data.first = this.last;
       this.data.checked = checked;
       this.data.groupName = this.groupName;
       this.data.changeInRange = changeInRange;
@@ -107,7 +106,6 @@ export class AppComponent implements AfterViewInit {
        } else {
          this.data = [];
          this.data.last = this.first;
-         this.data.first = this.last;
          this.data.checked = checked;
          this.data.groupName = this.groupName;
          this.data.changeInRange = changeInRange;
