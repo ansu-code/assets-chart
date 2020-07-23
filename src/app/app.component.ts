@@ -104,7 +104,12 @@ export class AppComponent implements AfterViewInit {
        if (!isEmpty(this.data.result)) {
          this.events.emit('asset:Data', this.data);
        } else {
-         this.events.emit('asset:Data', []);
+         this.data = [];
+         this.data.last = this.first;
+         this.data.checked = checked;
+         this.data.groupName = this.groupName;
+         this.data.changeInRange = changeInRange;
+         this.events.emit('asset:Data', this.data);
          alert('No Data for the current range');
        }
 

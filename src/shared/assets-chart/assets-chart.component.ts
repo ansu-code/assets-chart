@@ -67,22 +67,17 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
     // Create axes and series
    // console.log('yAxes', this.chart.yAxes.length);
+        console.log('Im in', date);
 
-    if (this.chart.yAxes.length === 0 && this.chart.xAxes.length === 0) {
-      console.log('yAxes xAxes');
-      this.createNewAxis = true;
-    }
+    if (!this.changeInRange || this.createNewAxis) {
+      console.log('createNewAxis', name);
 
-     if (!this.changeInRange || this.createNewAxis) {
       this.dateAxis = this.chart.xAxes.push(new am4charts.DateAxis());
       this.valueAxis = this.chart.yAxes.push(new am4charts.ValueAxis());
       this.series = this.chart.series.push(new am4charts.LineSeries());
       this.series.name = name;
       this.createNewAxis = false;
-      this.dateAxis.groupCount = 13;
      }
-
-    console.log('groupCount', this.dateAxis.groupCount);
 
     this.dateAxis.renderer.minGridDistance = 50;
     this.dateAxis.renderer.grid.template.location = 0;
@@ -90,7 +85,9 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     this.dateAxis.renderer.grid.template.strokeOpacity = 0.07;
     this.dateAxis.groupData = true;
 
-    console.log('groupCount', this.dateAxis);
+    if (this.selectedItem === 'month') {
+      this.dateAxis.groupCount = 13;
+    }
 
     this.valueAxis.renderer.minWidth = 60;
     this.valueAxis.renderer.grid.template.strokeOpacity = 0.07;
@@ -107,8 +104,6 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     this.series.xAxis = this.dateAxis;
     this.series.tooltipText = "{name}: [bold]{valueY}[/]";
     this.series.tensionX = 0.8;
-
-    console.log('series groupCount', this.dateAxis.groupCount);
 
   }
 
@@ -237,8 +232,26 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   }
 
   public addAxisAndSeries(i) {
+
+    if (this.chart.yAxes.length === 0 && this.chart.xAxes.length === 0) {
+      console.log('label', label.length);
+      if (label.length > 1) {
+        for (let j = 1; j <= label.length; j++) {
+          console.log('label', j);
+          console.log('label', label);
+          this.createNewAxis = true;
+          this.createAxisAndSeries([`date${j}`], [`value${j}`], label[j-1]);
+        }
+      } else {
+        // console.log('label', label);
+
+        console.log('id ', i);
+
+        this.createAxisAndSeries([`date${i}`], [`value${i}`], label[i-1]);
+      }
+    }
     // Create axes and series
-    this.createAxisAndSeries([`date${i}`], [`value${i}`], label);
+  //  this.createAxisAndSeries([`date${i}`], [`value${i}`], label);
   }
 
   public addSeries() {
@@ -392,18 +405,18 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     this.series.strokeWidth = 0;
     console.log('this.chart.series', this.chart);
     // this.chart.series.removeIndex(index);
-    // const getIndex = this.chart.yAxes.length;
+    const getIndex = this.chart.yAxes.length;
 
-      if (isEmpty(data)) {
-        this.chart.series.clear();
-        this.chart.yAxes.clear();
-        this.chart.xAxes.clear();
-        /* this.chart.yAxes.removeIndex( 1);
-         this.chart.xAxes.removeIndex( 0);
-         this.chart.xAxes.removeIndex( 1);*/
-        console.log('this.chart.yaxes', this.chart.yAxes.length);
+    if (isEmpty(data)) {
+      this.chart.series.clear();
+      this.chart.yAxes.clear();
+      this.chart.xAxes.clear();
+      /* this.chart.yAxes.removeIndex( 1);
+       this.chart.xAxes.removeIndex( 0);
+       this.chart.xAxes.removeIndex( 1);*/
+      console.log('this.chart.yaxes', this.chart.yAxes.length);
 
-      }
+    }
   }
 
   public ngOnDestroy() {
