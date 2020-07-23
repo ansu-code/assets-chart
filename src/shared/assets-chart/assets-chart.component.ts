@@ -91,7 +91,6 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     console.log('groupCount', this.dateAxis);
 
     this.valueAxis.renderer.minWidth = 60;
-    this.valueAxis.strictMinMax = true;
     this.valueAxis.renderer.grid.template.strokeOpacity = 0.07;
 
     // Create series
@@ -289,8 +288,9 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     } else {
 
       this.dateAxis.groupCount = 13;
-      first = '2019-08-01';
-      this.lastValue = '2020-07-23';
+      this.valueAxis.strictMinMax = true;
+      /*first = '2019-08-01';
+      this.lastValue = '2020-07-23';*/
       first = moment(this.lastValue).subtract(1, 'year').format('YYYY-MM-DD');
     }
 
