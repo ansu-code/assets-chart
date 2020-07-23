@@ -27,7 +27,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   public index: any;
   public changeInRange: any;
   public groupNameArr = [];
-  public createNewAxis: boolean;
+  public createNewAxis = false;
 
   @Input() data: any[];
   @Output() dateRange: EventEmitter<any> = new EventEmitter();
@@ -78,6 +78,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
       this.valueAxis = this.chart.yAxes.push(new am4charts.ValueAxis());
       this.series = this.chart.series.push(new am4charts.LineSeries());
       this.series.name = name;
+      this.createNewAxis = false;
      }
 
     console.log('groupCount', this.dateAxis.groupCount);
@@ -92,6 +93,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
     this.valueAxis.renderer.minWidth = 60;
     this.valueAxis.renderer.grid.template.strokeOpacity = 0.07;
+    this.valueAxis.strictMinMax = true;
 
     // Create series
 
@@ -272,11 +274,10 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     const setDateRange = [];
 
     if (this.selectedItem === 'minute') {
-      /*console.log('minute');
+     /* console.log('minute');
       first = '2019-08-01';
       this.lastValue = '2019-08-10';*/
       this.dateAxis.groupCount = 60 * 24 * 8;
-      console.log('this.dateAxis.groupCount', this.dateAxis.groupCount);
       first = moment(this.lastValue).subtract(8, 'days').format('YYYY-MM-DD');
 
     } else if (this.selectedItem === 'hour' || this.selectedItem === 'day') {
@@ -288,7 +289,6 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     } else {
 
       this.dateAxis.groupCount = 13;
-      this.valueAxis.strictMinMax = true;
       /*first = '2019-08-01';
       this.lastValue = '2020-07-23';*/
       first = moment(this.lastValue).subtract(1, 'year').format('YYYY-MM-DD');
