@@ -50,12 +50,13 @@ export class AppComponent implements AfterViewInit {
     this.accessToken = response.result.access_token;
   }
 
-  public async getData(event, name, changeInRange = true) {
+  public async getData(event, name, index, changeInRange = true) {
 
     try {
 
       console.log('first', this.first);
       console.log('last', this.last);
+      console.log('index', index);
 
       // assign groupName
 
@@ -96,6 +97,7 @@ export class AppComponent implements AfterViewInit {
       this.data.checked = checked;
       this.data.groupName = this.groupName;
       this.data.changeInRange = changeInRange;
+      this.data.index = index;
 
      // this.events.emit('asset:Data', this.data);
 
@@ -108,6 +110,7 @@ export class AppComponent implements AfterViewInit {
          this.data.last = this.first;
          this.data.checked = checked;
          this.data.groupName = this.groupName;
+         this.data.index = index;
          this.data.changeInRange = changeInRange;
          this.events.emit('asset:Data', this.data);
          alert('No Data for the current range');
