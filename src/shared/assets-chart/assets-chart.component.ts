@@ -123,7 +123,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
     if (response.checked) {
       this.changeInRange = false;
-      index += 1;
+      index = response.index;
 
       // Response from API
 
@@ -147,36 +147,47 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
       console.log('response', response);
       this.groupNameArr.push(label);
 
+      if (!isEmpty(data)) {
+
+        // sort array by date asc
+        const sortedData = orderBy(data, [`date${index}`], 'asc');
+
+        // Set chart Data
+        this.chart.data = sortedData;
+        this.addSeries();
+      }
     } else {
 
       // filter the unchecked group name arrays
+    //  this.chart.series.removeIndex(response.index - 1);
 
+     // console.log('response', this.valueAxis[`${response.index}`]);
+
+    //  this.valueAxis[`${response.index}`].disabled = true;
+
+      // this.dateAxis.disabled = true;
       data = data.filter(function (e) {
 
-        const name = e[`name${index}`];
+        const name = e[`name${response.index}`];
         return name !== label.toString();
       });
 
-      const sortedData = orderBy(data, [`date${index}`], 'asc');
+      console.log('this.series.yAxis', this.series);
 
-      this.chart.data = sortedData;
+      // const sortedData = orderBy(data, [`date${index}`], 'asc');
 
-      console.log('data', data);
-      // index -= 1;
-
+/*
+      this.dateAxis.renderer.minLabelPosition = 0.05;
+      this.dateAxis.renderer.maxLabelPosition = 0.95;
+      this.valueAxis.renderer.minLabelPosition = 0.05;
+      this.valueAxis.renderer.maxLabelPosition = 0.95;*/
       this.resetChartValues();
 
 
-    }
+      console.log('data', data);
+      index -= 1;
+      this.chart.data = data;
 
-    if (!isEmpty(data)) {
-
-      // sort array by date asc
-      const sortedData = orderBy(data, [`date${index}`], 'asc');
-
-      // Set chart Data
-      this.chart.data = sortedData;
-      this.addSeries();
     }
 
   }
@@ -400,6 +411,8 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     this.series.disabled = true;
     this.series.name = '';
     this.series.strokeWidth = 0;
+    this.valueAxis.strictMinMax = true;
+
     console.log('this.chart.series', this.chart);
     // this.chart.series.removeIndex(index);
     const getIndex = this.chart.yAxes.length;
