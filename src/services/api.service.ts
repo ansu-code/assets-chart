@@ -24,7 +24,7 @@ export class ApiService {
     }
 
     // base url for api
-    this.baseUrl = '';
+    this.baseUrl = 'https://app.ipredict.io/';
 
     // url of request
     const apiUrl = this.baseUrl + url;
