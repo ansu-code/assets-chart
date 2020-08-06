@@ -6,7 +6,7 @@ import { HttpClient, HttpRequest, HttpParams, HttpHeaders } from '@angular/commo
 import * as _ from 'lodash';
 
 @Injectable()
-export class ApiService {
+export class InsightsService {
 
   private baseUrl: string;
 

@@ -3,7 +3,7 @@ import { Subject } from 'rxjs';
 import * as _ from 'lodash';
 
 @Injectable()
-export class EventsService {
+export class InsightsEventsService {
 
   subjects: any;
 

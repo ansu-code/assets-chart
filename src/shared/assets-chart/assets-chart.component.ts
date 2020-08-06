@@ -1,7 +1,8 @@
 import { Component, NgZone, OnDestroy, Input, Output, EventEmitter, AfterViewInit} from '@angular/core';
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
-import { EventsService } from '../../services/events.service';
+import { InsightsEventsService } from '../../app/solar/services/insights.events.service';
+
 import * as moment from 'moment';
 import { each , orderBy, findIndex, isEmpty } from 'lodash';
 
@@ -35,7 +36,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   @Output() timeEvent: EventEmitter<any> = new EventEmitter();
   @Output() groupName: EventEmitter<any> = new EventEmitter();
 
-  constructor(private zone: NgZone, public events: EventsService) {
+  constructor(private zone: NgZone, public events: InsightsEventsService) {
     events.listen('asset:Data', async (response) => {
       console.log('response', response);
       if (!isEmpty(response)) {
@@ -65,9 +66,10 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
   public createAxisAndSeries(date, field, name) {
 
+
     // Create axes and series
    // console.log('yAxes', this.chart.yAxes.length);
-        console.log('Im in', date);
+        console.log('name', name);
 
     if (!this.changeInRange || this.createNewAxis) {
       console.log('createNewAxis', name);
@@ -78,6 +80,8 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
       this.series.name = name;
       this.createNewAxis = false;
      }
+
+    console.log('selectedItem', this.selectedItem);
 
     this.dateAxis.renderer.minGridDistance = 50;
     this.dateAxis.renderer.grid.template.location = 0;
@@ -119,7 +123,6 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   }
 
   public async getCheckBoxData(response) {
-    console.log('response.checked', response.checked);
 
     if (response.checked) {
       this.changeInRange = false;
@@ -167,25 +170,23 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
       // this.dateAxis.disabled = true;
       data = data.filter(function (e) {
-
         const name = e[`name${response.index}`];
         return name !== label.toString();
       });
 
-      console.log('this.series.yAxis', this.series);
 
-      // const sortedData = orderBy(data, [`date${index}`], 'asc');
+      if (index > 1) {
+        index -= 1;
+        this.chart.series.removeIndex(index).dispose();
+      } else {
+        this.chart.series.clear();
+        this.chart.yAxes.clear();
+        this.chart.xAxes.clear();
+        this.addSeries();
+      }
 
-/*
-      this.dateAxis.renderer.minLabelPosition = 0.05;
-      this.dateAxis.renderer.maxLabelPosition = 0.95;
-      this.valueAxis.renderer.minLabelPosition = 0.05;
-      this.valueAxis.renderer.maxLabelPosition = 0.95;*/
-      this.resetChartValues();
+      // this.removeSeries();
 
-
-      console.log('data', data);
-      index -= 1;
       this.chart.data = data;
 
     }
@@ -427,6 +428,13 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
       console.log('this.chart.yaxes', this.chart.yAxes.length);
 
     }
+  }
+
+  public removeSeries() {
+    this.chart.series.clear();
+    this.chart.yAxes.clear();
+    this.chart.xAxes.clear();
+    this.addSeries();
   }
 
   public ngOnDestroy() {
