@@ -33,7 +33,6 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   @Output() dateRange: EventEmitter<any> = new EventEmitter();
   @Output() rangeChangeEvent: EventEmitter<any> = new EventEmitter();
   @Output() timeEvent: EventEmitter<any> = new EventEmitter();
-  @Output() groupName: EventEmitter<any> = new EventEmitter();
 
   constructor(private zone: NgZone, public events: InsightsEventsService) {
     events.listen('asset:Data', async (response) => {
