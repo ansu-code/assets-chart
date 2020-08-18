@@ -9,35 +9,36 @@
 </div> 
 
 <div id="controls" style="width: 100%; overflow: hidden;">
+
   <div style="float: left; margin-left: 15px;">
     From: <span class="badge badge-warning" id="fromfield"></span>
     To: <span class="badge badge-warning" id="tofield" ></span>
-    </div>
+  </div>
   <div style="float: right; margin-right: 15px;">
     
-      <button type="button" id="previous" class="btn btn-outline-primary">Prev</button>
+     <button type="button" id="previous" class="btn btn-outline-primary" (click)="getEvent('previous')">Prev</button>
    
 <div class="btn-group" data-toggle="buttons">
 
   <label class="btn btn-primary">
-    <input type="radio" name="options" id="minute"> Minute
+    <input type="radio" name="options" id="minute" (click)="getEvent('minute')"> Minute
   </label>
   <label class="btn btn-primary">
-    <input type="radio" name="options" id="hour"> Hour
+    <input type="radio" name="options" id="hour" (click)="getEvent('hour')"> Hour
   </label>
   <label class="btn btn-primary">
-    <input type="radio" name="options" id="day"> Day
+    <input type="radio" name="options" id="day" (click)="getEvent('day')"> Day
   </label>
   <label class="btn btn-primary" active>
-    <input type="radio" name="options" id="month" checked> Month
+    <input type="radio" name="options" id="month" checked (click)="getEvent('month')"> Month
   </label>
 
 </div>
 
-  <button type="button" id="next" class="btn btn-outline-primary">Next</button>
+  <button type="button" id="next" class="btn btn-outline-primary" (click)="getEvent('next')">Next</button>
 
+</div>
+</div>
 
-  </div>
-  </div>
 <div id="chartdiv">  
 </div>
