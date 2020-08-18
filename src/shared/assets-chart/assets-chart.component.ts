@@ -27,7 +27,6 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   public series: any;
   public index: any;
   public changeInRange: any;
-  public groupNameArr = [];
   public createNewAxis = false;
 
   @Input() data: any[];
@@ -148,7 +147,6 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
       this.lastValue = response.last;
       this.index = index;
       console.log('response', response);
-      this.groupNameArr.push(label);
 
       if (!isEmpty(data)) {
 
@@ -182,7 +180,7 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
         this.chart.series.clear();
         this.chart.yAxes.clear();
         this.chart.xAxes.clear();
-        this.addSeries();
+       // this.addSeries();
       }
 
       // this.removeSeries();
@@ -263,8 +261,6 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
   }
 
   public getEvent(value) {
-    console.log('im in getEvent');
-
     this.changeInRange = true;
 
     switch (value) {
@@ -326,8 +322,6 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
     // this.addSeries();
 
     this.lastValue = first;
-
-    this.groupName.emit(this.groupNameArr);
     this.dateRange.emit(setDateRange);
     this.rangeChangeEvent.emit({ month: this.selectedItem, value: ''});
 
@@ -355,7 +349,6 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
     this.lastValue = first;
 
-    this.groupName.emit(this.groupNameArr);
     this.dateRange.emit(setDateRange);
     this.rangeChangeEvent.emit({ month: this.selectedItem, value: 'previous'});
   }
@@ -396,7 +389,6 @@ export class AssetschartComponent implements OnDestroy, AfterViewInit {
 
     this.lastValue = first;
 
-    this.groupName.emit(this.groupNameArr);
     this.dateRange.emit(setDateRange);
     this.rangeChangeEvent.emit({ month: this.selectedItem, value: 'next'});
 

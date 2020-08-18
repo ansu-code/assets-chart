@@ -28,10 +28,12 @@ export class InsightsComponent implements AfterViewInit {
   public changeInRange: any;
   public checkBoxValues = [
     {
-      name: 'COUNT_KWH_HR'
+      name: 'COUNT_KWH_HR',
+      isChecked: false
     },
     {
-      name: 'AC_VOL_YB'
+      name: 'AC_VOL_YB',
+      isChecked: false
     }
   ];
 
@@ -49,17 +51,12 @@ export class InsightsComponent implements AfterViewInit {
     this.accessToken = response.result.access_token;
   }
 
-  public async getData(event, name, index, changeInRange = true) {
+  public async getData(event, value, index, changeInRange = true) {
 
     try {
-
-      console.log('first', this.first);
-      console.log('last', this.last);
-      console.log('index', index);
-
       // assign groupName
 
-      this.groupName = name;
+      this.groupName = value.name ? value.name : value;
 
       // Check Event, Say if the checkbox is clicked
 
@@ -67,7 +64,8 @@ export class InsightsComponent implements AfterViewInit {
 
         if (!changeInRange) {
           checked = true;
-          this.groupName = [name];
+          this.groupName = [value.name];
+          value.isChecked = true;
         }
 
         this.data = await this.api.post('SolarSightWS/generic/pg/selectFrom',
@@ -134,7 +132,11 @@ export class InsightsComponent implements AfterViewInit {
     if (this.selectedItem !== selectedItem.month || selectedItem.value) {
       this.selectedItem = selectedItem.month;
       console.log('this.selectedItem', selectedItem);
-      this.getData(true, this.groupName, true);
+
+      const grpName = [];
+      this.checkBoxValues.map((value) => value.isChecked === true ? grpName.push(value.name) : []);
+
+      this.getData(true, grpName, true);
     } else {
       alert('Please select different range');
     }
@@ -148,12 +150,6 @@ export class InsightsComponent implements AfterViewInit {
     this.first = this.dateRange[0].first;
     this.last = this.dateRange[0].last;
 
-  }
-
-  // Set Group Name
-
-  public getGroupName(groupName) {
-    this.groupName = flattenDeep(groupName);
   }
 
   public getTimeEvent(changeInRange) {

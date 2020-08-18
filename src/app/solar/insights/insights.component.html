@@ -34,13 +34,12 @@
 
 <div>
   <label *ngFor="let value of checkBoxValues; let i = index">
-    <input type="checkbox" ngModel (ngModelChange)="getData($event , value.name, i+1, false)"> {{value.name}}
+    <input type="checkbox" ngModel (ngModelChange)="getData($event , value , i+1, false)"> {{value.name}}
   </label>
 </div>
 
 <app-assets-chart
   [data]="data"
-  (groupName)="getGroupName($event)"
   (rangeChangeEvent) = "getRangeChangeEvent($event)"
   (dateRange)="getDateRange($event)"
   (timeEvent)="getTimeEvent($event)"
